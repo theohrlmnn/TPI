@@ -9,8 +9,8 @@ require_once 'server/databaseConnection.php';
 /**
  * INCLUDE DES MODELS
  */
-
 require_once 'models/mUsers.php';
+require_once 'models/mSessions.php';
 
 
 /**

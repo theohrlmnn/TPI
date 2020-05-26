@@ -9,7 +9,7 @@ class cUser{
      /**
      * @brief   Class Constructor avec paramètres par défaut pour construire l'objet
      */
-    public function __construct($InUserId = -1,$InlastName = "", $InfirstName = "", $InCompagnyName = "", $InAddress = "", $InEmail = "", $InPhone = ""){
+    public function __construct($InUserId = -1,$InlastName = "", $InfirstName = "", $InCompagnyName = "", $InAddress = "", $InEmail = "", $InPhone = "",$InRole = "Nobody"){
         $this->id = $InUserId;
         $this->lastName = $InlastName;
         $this->firstName = $InfirstName;
