@@ -11,4 +11,10 @@ define ('RL_Manager', 3);
 define ('RL_Expert', 2);
 define ('RL_Administrator', 1);
 
+ // Les types définis d'alerte pour uilkit
+ define ('AL_Primary', 'primary');
+ define ('AL_Sucess', 'sucess');
+ define ('AL_Warning', 'warning');
+ define ('AL_Danger', 'danger');
+
 ?>
