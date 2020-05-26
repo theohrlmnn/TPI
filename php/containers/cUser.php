@@ -39,6 +39,8 @@ class cUser{
     /** @var [string] Numéro de téléphonne de l'utilisateur */
     public $phone;
 
+    /** @var [string] Tableau du role de l'utilisateur */
+    public $role;
 }
 
 ?>

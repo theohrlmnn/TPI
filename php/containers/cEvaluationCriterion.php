@@ -4,7 +4,7 @@
  * La classe cEvaluationCriterions contient les informations complémentaire à un critère d'évaluation
  * Ex: Nombre, description, Tpi associé, etc.
  */
-class cMedia{
+class cEvaluationCriterion{
 
      /**
      * @brief   Class Constructor avec paramètres par défaut pour construire l'objet
