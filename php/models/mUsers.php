@@ -49,3 +49,26 @@ function signIn($u, $pswd)
         return false;
     }
 }
+
+function getAllUserByRole($roleID)
+{
+    $arrUser = array();
+    $database = UserDbConnection();
+
+    $query = $database->prepare("SELECT users.userID, users.lastName, users.firstName, user_roles.roleID FROM user_roles , users WHERE user_roles.userID = users.userID AND user_roles.roleID =:roleID;");
+    $query->bindParam(":roleID", $roleID, PDO::PARAM_STR);
+
+    if ($query->execute()) {
+        $row = $query->fetchAll(PDO::FETCH_ASSOC);
+        for ($i = 0; $i < count($row); $i++) {
+            $u = new cUser();
+            $u->id = $row[$i]["userID"];
+            $u->lastName = $row[$i]["lastName"];
+            $u->firstName = $row[$i]["firstName"];
+            $u->role = $row[$i]["roleID"];
+            array_push($arrUser, $u);
+        }
+        return $arrUser;
+    }
+    return false;
+}

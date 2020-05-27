@@ -17,7 +17,7 @@ if ($btnLogin) {
 
 	if (signin($u, $pswd)) {
 		$messages = array(
-			array("message" => "Bienvenu " . getFirstNameUserSession() , "type" => AL_Sucess)
+			array("message" => "Bienvenu " . getFirstNameUserSession(), "type" => AL_Sucess)
 		);
 		setMessage($messages);
 		setDisplayMessage(true);
@@ -47,9 +47,8 @@ if ($btnLogin) {
 <body class="uk-flex uk-flex-center uk-flex-middle uk-background-muted uk-height-viewport" data-uk-height-viewport>
 	<div class="uk-width-medium uk-padding-small">
 		<?php
-		if (doesDisplayMessage()) { 
-			echo displayMessage();	
-	 } ?>
+		echo displayMessage();
+		?>
 		<!-- login -->
 		<form class="toggle-class" action="login.php" method="POST">
 			<fieldset class="uk-fieldset">
@@ -75,7 +74,7 @@ if ($btnLogin) {
 
 	<!-- JS FILES -->
 	<script src="js/uikit.js"></script>
-    <script src="js/uikit-icons.js"></script>
+	<script src="js/uikit-icons.js"></script>
 </body>
 
 </html>

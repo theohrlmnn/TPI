@@ -9,7 +9,10 @@ class cTpi{
      /**
      * @brief   Class Constructor avec paramètres par défaut pour construire l'objet
      */
-    public function __construct($InTpiId = -1,$InYear = "", $InUserCandidateId = "", $InUserManagerId = "", $InUserExpertId = "", $InUserExpertId2 = "", $InTpiStatus = "", $InTitle = "", $InCfcDomain = "", $InAbstract = "", $InSessionStart = "", $SessionEnd = "", $InPresentationDate = "", $InWorkplace = "", $InDescription = "", $InSubmissionDate = "", $InPdfPath = "" ){
+    public function __construct($InTpiId = -1,$InYear = "", $InUserCandidateId = null, $InUserManagerId = null,
+        $InUserExpertId = null, $InUserExpertId2 = null, $InTpiStatus = "draft", $InTitle = null, $InCfcDomain = null,
+        $InAbstract = null, $InSessionStart = null, $SessionEnd = null, $InPresentationDate = null, $InWorkplace = null, 
+        $InDescription = null, $InSubmissionDate = null, $InPdfPath = null){
         $this->id = $InTpiId;
         $this->year = $InYear;
         $this->userCandidateId = $InUserCandidateId;
@@ -35,16 +38,16 @@ class cTpi{
     public $year;
 
     /** @var [int] Candidat au TPI */
-    public $userCandidateID;
+    public $userCandidateId;
 
     /** @var [int] Chef de projet / Professeur / Manager du TPI */
-    public $userManagerID;
+    public $userManagerId;
 
     /** @var [int] Expert 1 du TPI */
-    public $userExpertID;
+    public $userExpertId;
 
     /** @var [int] Expert 2 du TPI */
-    public $userExpertID2;
+    public $userExpertId2;
 
     /** @var [ENUM('draft', 'submitted', 'valid')] Statut du TPI */
     public $tpiStatus;

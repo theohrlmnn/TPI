@@ -17,7 +17,7 @@ function setMessage($arrMessages)
  */
 function doesDisplayMessage()
 {
-    if(isset($_SESSION['message']['doesDisplayMessage']))
+    if (isset($_SESSION['message']['doesDisplayMessage']))
         return $_SESSION['message']['doesDisplayMessage'];
 }
 
@@ -32,24 +32,31 @@ function setDisplayMessage($bool)
 }
 
 /**
- * Fonction permettant de définir des messages dans un tableau
- * Met automatique à false avec setDisplayMessage(false)
+ * Fonction permettant de définir des messages dans un tableau.
+ * SetDisplayMessage à false après affichage
  *
  * @return string Retourne un html qui contient des alertes
  */
 function displayMessage()
 {
-    $arrMessage = $_SESSION["message"]["messages"];
-    $html = "";
+    if (doesDisplayMessage()) {
+        $arrMessage = $_SESSION["message"]["messages"];
+        $html = "";
 
-    for ($i=0; $i < count($arrMessage) ; $i++) { 
-        $alert = "<div class=\"uk-alert-" . $arrMessage[$i]['type'] . "\" uk-alert>";
-        $alert .= "<a class=\"uk-alert-close\" uk-close></a>";
-        $alert .= "<p>".$arrMessage[$i]['message'] ."</p>";
-        $alert .= "</div>";
-        $html .= $alert;
+        for ($i = 0; $i < count($arrMessage); $i++) {
+            $alert = "<div class=\"uk-alert-" . $arrMessage[$i]['type'] . "\" uk-alert>";
+            $alert .= "<a class=\"uk-alert-close\" uk-close></a>";
+            $alert .= "<p>" . $arrMessage[$i]['message'] . "</p>";
+            $alert .= "</div>";
+            $html .= $alert;
+        }
+        setDisplayMessage(false);
+        resetMessages();
+        return $html;
     }
-    setDisplayMessage(false);
-    return $html;
 }
-?>
+
+function resetMessages()
+{
+    $_SESSION["message"]["messages"] = "";
+}
