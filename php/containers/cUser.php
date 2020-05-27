@@ -17,6 +17,7 @@ class cUser{
         $this->adress = $InAddress;
         $this->email = $InEmail;
         $this->phone = $InPhone;
+        $this->role = $InRole;
     }
     /** @var [int] Id unique de l'utilisateur */
     public $id;

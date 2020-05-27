@@ -4,7 +4,7 @@
  * La classe cTpi contient les informations complémentaire à un TPI
  * Ex: Année, Titre, description, etc.
  */
-class cPhoto{
+class cTpi{
 
      /**
      * @brief   Class Constructor avec paramètres par défaut pour construire l'objet

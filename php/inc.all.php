@@ -1,7 +1,4 @@
 <?php
-session_start();
-
-
 
 /**
  * INCLUDE DE LA CONNEXION A LA BDD
@@ -15,7 +12,7 @@ require_once 'server/databaseConnection.php';
 require_once 'models/mUsers.php';
 require_once 'models/mSessions.php';
 require_once 'models/mMessages.php';
-
+require_once 'models/mTpis.php';
 
 /**
  * INCLUDE DES CONSTANTES
@@ -29,6 +26,8 @@ require_once 'containers/cEvaluationCriterion.php';
 require_once 'containers/cMedia.php';
 require_once 'containers/cTpi.php';
 require_once 'containers/cUser.php';
+
+session_start();
 
 setIfLogged();
 ?>

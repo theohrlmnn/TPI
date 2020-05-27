@@ -29,7 +29,15 @@ function setIfLogged()
  */
 function isLogged()
 {
-    return $_SESSION['user']['isLogged'];
+    if (isset($_SESSION['user']['isLogged'])) 
+        return $_SESSION['user']['isLogged'];
+    else 
+    {
+        
+        return false;
+    }
+        
+    
 }
 
  /**
@@ -39,7 +47,23 @@ function isLogged()
  */
 function getFirstNameUserSession()
 {
-    if (!isset($_SESSION['user']['userLogged'])) 
+    if (isset($_SESSION['user']['userLogged'])) 
         return $_SESSION['user']['userLogged']->firstName;
+}
+
+ /**
+ * Fonction permettant de connaitre le role d'un utilisateur si il est connecté
+ *
+ * @return string Retourne le prénom
+ */
+function getRoleUserSession()
+{
+    if (isset($_SESSION['user']['userLogged'])) 
+        return $_SESSION['user']['userLogged']->role;
+}
+
+function destroySession()
+{
+    session_destroy();
 }
 ?>
