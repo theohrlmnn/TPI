@@ -1,11 +1,11 @@
 <?php
-    /**
-     * File: database.php
-     * Author: Théo Hurlimann
-     * Date: 17.12.2019
-     * Description: manage Database.
-     * Version: 1.0
-     */
+/*
+* File: database.php
+* Author: Théo Hurlimann
+* Date: 17.12.2019
+* Description: connection à la Database.
+* Version: 1.0
+*/
 
     require_once 'databaseInformations.php';
 

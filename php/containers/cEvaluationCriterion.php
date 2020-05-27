@@ -1,5 +1,11 @@
 <?php
-
+/*
+ * File: cEvaluationCriterion.php
+ * Author: Théo Hurlimann
+ * Date: 25.05.2020
+ * Description: Contient les informations utile pour un critère d'évaluation
+ * Version: 1.0 
+*/
 /**
  * La classe cEvaluationCriterions contient les informations complémentaire à un critère d'évaluation
  * Ex: Nombre, description, Tpi associé, etc.

@@ -1,5 +1,11 @@
 <?php
-
+/*
+ * File: mMessages.php
+ * Author: Théo Hurlimann
+ * Date: 26.05.2020
+ * Description: Contient les fonctions utile pour un message
+ * Version: 1.0 
+*/
 /**
  * Fonction permettant de définir des messages dans un tableau
  *

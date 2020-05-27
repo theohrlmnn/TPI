@@ -1,4 +1,11 @@
 <?php
+/*
+ * File: listTPI.php
+ * Author: Théo Hurlimann
+ * Date: 26.05.2020
+ * Description: Page pour la connection
+ * Version: 1.0 
+*/
 require_once("php/inc.all.php");
 
 $btnLogin = filter_input(INPUT_POST, "btnLogin");

@@ -1,6 +1,12 @@
 <?php
-
-/**
+/*
+ * File: cMedia.php
+ * Author: Théo Hurlimann
+ * Date: 25.05.2020
+ * Description: Contient les informations utile pour un media
+ * Version: 1.0 
+*/
+/*
  * La classe cMedia contient les informations complémentaire à un media
  * Ex: nom original, chemin, Tpi associé, etc.
  */

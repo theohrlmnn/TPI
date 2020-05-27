@@ -1,4 +1,11 @@
 <?php
+/*
+ * File: createTPI.php
+ * Author: Théo Hurlimann
+ * Date: 27.05.2020
+ * Description: Contient les fonctions utile pour un TPI
+ * Version: 1.0 
+*/
 require_once("php/inc.all.php");
 
 if (!islogged() && min(getRoleUserSession()) != RL_Administrator) {

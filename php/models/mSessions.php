@@ -1,5 +1,11 @@
 <?php
-
+/*
+ * File: mSessions.php
+ * Author: Théo Hurlimann
+ * Date: 26.05.2020
+ * Description: Contient les fonctions utile pour une session
+ * Version: 1.0 
+*/
  /**
  * Fonction permettant de définir si un utilisateur est connecté ou non
  *

@@ -1,5 +1,11 @@
 <?php
-
+/*
+ * File: cTpi.php
+ * Author: Théo Hurlimann
+ * Date: 25.05.2020
+ * Description: Contient les informations utile pour un TPI
+ * Version: 1.0 
+*/
 /**
  * La classe cTpi contient les informations complémentaire à un TPI
  * Ex: Année, Titre, description, etc.

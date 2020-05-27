@@ -1,4 +1,11 @@
 <?php
+/*
+* File: constants.php
+* Author: Théo Hurlimann
+* Date: 15.05.2020
+* Description: Contient les constantes utiles pour le projet
+* Version: 1.0 
+*/
 /**
 * Fichier des constantes
 */

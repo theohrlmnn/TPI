@@ -1,5 +1,11 @@
 <?php
-
+/*
+ * File: inc.all.php
+ * Author: Théo Hurlimann
+ * Date: 15.05.2020
+ * Description: Contient les fichiers utile pour le bon fonctionnement du projet
+ * Version: 1.0 
+*/
 /**
  * INCLUDE DE LA CONNEXION A LA BDD
  */

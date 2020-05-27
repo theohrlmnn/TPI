@@ -1,5 +1,11 @@
 <?php
-
+/*
+ * File: cUser.php
+ * Author: Théo Hurlimann
+ * Date: 25.05.2020
+ * Description: Contient les informations utile pour un Utilisateur
+ * Version: 1.0 
+*/
 /**
  * La classe cUser contient les informations complémentaire à un utilisateur
  * Ex: nom, prénom, email, etc.

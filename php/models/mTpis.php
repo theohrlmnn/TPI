@@ -1,4 +1,11 @@
 <?php
+/*
+ * File: mSessions.php
+ * Author: Théo Hurlimann
+ * Date: 26.05.2020
+ * Description: Contient les fonctions utile pour un TPI
+ * Version: 1.0 
+*/
 require_once("php/inc.all.php");
 
 function getAllTpi()
