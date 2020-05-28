@@ -87,4 +87,6 @@ function getNameUserByRoleByArray($id, $arrUser)
             return $user->firstName. " " . $user->lastName; 
         }
     }
+
+    return false;
 }

@@ -8,10 +8,10 @@
 */
 require_once("php/inc.all.php");
 
-if (!islogged() && min(getRoleUserSession()) != RL_Administrator) {
+if (!islogged() && min(getRoleUserSession()) != RL_ADMINISTRATOR) {
 
     $messages = array(
-        array("message" => "Vous n'avez pas les droits pour voir ceci.", "type" => AL_Danger)
+        array("message" => "Vous n'avez pas les droits pour voir ceci.", "type" => AL_DANGER)
     );
     setMessage($messages);
     setDisplayMessage(true);
@@ -29,9 +29,9 @@ $idTpi = filter_input(INPUT_GET, "idTpi", FILTER_SANITIZE_NUMBER_INT);
 $btnModify = filter_input(INPUT_POST, "btnModify");
 
 $tpi = getTpiByIdToModifiyByAdmin($idTpi);
-$arrUserManager = getAllUserByRole(RL_Manager);
-$arrUserCandidat = getAllUserByRole(RL_Candidate);
-$arrUserExpert = getAllUserByRole(RL_Expert);
+$arrUserManager = getAllUserByRole(RL_MANAGER);
+$arrUserCandidat = getAllUserByRole(RL_CANDIDATE);
+$arrUserExpert = getAllUserByRole(RL_EXPERT);
 
 $fullNameManager = getNameUserByRoleByArray($tpi->userManagerId, $arrUserManager);
 $fullNameCandidat = getNameUserByRoleByArray($tpi->userCandidateId, $arrUserCandidat);
@@ -52,7 +52,7 @@ if ($tpi->userExpertId2 !== "") {
 if (!$tpi) {
     $problem = true;
     $messages = array(
-        array("message" => "Impossible de récupérer/mettre à jour les données du TPI demandé.", "type" => AL_Danger)
+        array("message" => "Impossible de récupérer/mettre à jour les données du TPI demandé.", "type" => AL_DANGER)
     );
     setMessage($messages);
     setDisplayMessage(true);
@@ -67,7 +67,7 @@ if ($btnModify) {
 
     if (!ctype_digit($year)) {
         $messages = array(
-            array("message" => "Veuillez mettre une année en nombre", "type" => AL_Danger)
+            array("message" => "Veuillez mettre une année en nombre", "type" => AL_DANGER)
         );
         setMessage($messages);
         setDisplayMessage(true);
@@ -84,8 +84,7 @@ if ($btnModify) {
             $expert2 = null;
         }
 
-        if ($tpi->year != $year || $tpi->userCandidateId != $candidat || $tpi->userManagerId = $manager || $tpi->userExpertId = $expert1 || $tpi->userExpertId2 = $expert2) {
-            $tpi = new cTpi();
+        if ($tpi->year != $year || $tpi->userCandidateId != $candidat || $tpi->userManagerId != $manager || $tpi->userExpertId != $expert1 || $tpi->userExpertId2 != $expert2) {
             $tpi->id = $idTpi;
             $tpi->year = $year;
             $tpi->userCandidateId = $candidat;
@@ -95,14 +94,14 @@ if ($btnModify) {
 
             if ( modifyTpi($tpi)) {
                 $messages = array(
-                    array("message" => "Le TPI a bien été mis à jour.", "type" => AL_Sucess)
+                    array("message" => "Le TPI a bien été mis à jour.", "type" => AL_SUCESS)
                 );
                 setMessage($messages);
                 setDisplayMessage(true);
             }
             else {
                 $messages = array(
-                    array("message" => "Un problème est apparu lors de la mise à jour du TPI", "type" => AL_Danger)
+                    array("message" => "Un problème est apparu lors de la mise à jour du TPI", "type" => AL_DANGER)
                 );
                 setMessage($messages);
                 setDisplayMessage(true);

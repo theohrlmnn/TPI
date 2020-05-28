@@ -8,10 +8,10 @@
 */
 require_once("php/inc.all.php");
 
-if (!islogged() && min(getRoleUserSession()) != RL_Administrator) {
+if (!islogged() && min(getRoleUserSession()) != RL_ADMINISTRATOR) {
 
     $messages = array(
-        array("message" => "Vous devez être connecté pour voir ceci.", "type" => AL_Danger)
+        array("message" => "Vous devez être connecté pour voir ceci.", "type" => AL_DANGER)
     );
     setMessage($messages);
     setDisplayMessage(true);
@@ -31,7 +31,7 @@ if ($btnCreate) {
 
     if ($manager == "" || $candidat == "" || $year == "") {
         $messages = array(
-            array("message" => "Veuillez renseigner les champs obligatoire", "type" => AL_Danger)
+            array("message" => "Veuillez renseigner les champs obligatoire", "type" => AL_DANGER)
         );
         setMessage($messages);
         setDisplayMessage(true);
@@ -40,7 +40,7 @@ if ($btnCreate) {
 
     if (!ctype_digit($year)) {
         $messages = array(
-            array("message" => "Veuillez mettre une année en nombre", "type" => AL_Danger)
+            array("message" => "Veuillez mettre une année en nombre", "type" => AL_DANGER)
         );
         setMessage($messages);
         setDisplayMessage(true);
@@ -97,9 +97,9 @@ if ($btnCreate) {
     }
 }
 
-$arrUserManager = getAllUserByRole(RL_Manager);
-$arrUserCandidat = getAllUserByRole(RL_Candidate);
-$arrUserExpert = getAllUserByRole(RL_Expert);
+$arrUserManager = getAllUserByRole(RL_MANAGER);
+$arrUserCandidat = getAllUserByRole(RL_CANDIDATE);
+$arrUserExpert = getAllUserByRole(RL_EXPERT);
 
 
 

@@ -18,7 +18,7 @@ class cTpi{
     public function __construct($InTpiId = -1,$InYear = "", $InUserCandidateId = null, $InUserManagerId = null,
         $InUserExpertId = null, $InUserExpertId2 = null, $InTpiStatus = "draft", $InTitle = null, $InCfcDomain = null,
         $InAbstract = null, $InSessionStart = null, $SessionEnd = null, $InPresentationDate = null, $InWorkplace = null, 
-        $InDescription = null, $InSubmissionDate = null, $InPdfPath = null){
+        $InDescription = null, $InSubmissionDate = null, $InPdfPath = null,$InEvaluationCriterions = null,$InMedias = null){
         $this->id = $InTpiId;
         $this->year = $InYear;
         $this->userCandidateId = $InUserCandidateId;
@@ -36,6 +36,8 @@ class cTpi{
         $this->description = $InDescription;
         $this->submissionDate = $InSubmissionDate;
         $this->pdfPath = $InPdfPath;
+        $this->evaluationCriterions = $InEvaluationCriterions;
+        $this->medias = $InMedias;
     }
     /** @var [int] Id unique du TPI */
     public $id;
@@ -87,6 +89,10 @@ class cTpi{
 
     /** @var [string] Chemin vers le pdf */
     public $pdfPath;
-}
 
-?>
+    /** @var [cEvaluationCriterion] Tableau de critères du TPI */
+    public $evaluationCriterions;
+    
+    /** @var [cEvaluationCriterion] Tableau de media du TPI */
+    public $medias;
+}

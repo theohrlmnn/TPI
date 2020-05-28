@@ -24,7 +24,7 @@ if ($btnLogin) {
 
 	if (signin($u, $pswd)) {
 		$messages = array(
-			array("message" => "Bienvenu " . getFirstNameUserSession(), "type" => AL_Sucess)
+			array("message" => "Bienvenu " . getFirstNameUserSession(), "type" => AL_SUCESS)
 		);
 		setMessage($messages);
 		setDisplayMessage(true);
@@ -32,7 +32,7 @@ if ($btnLogin) {
 		exit;
 	} else {
 		$messages = array(
-			array("message" => "Problème de connexion", "type" => AL_Danger)
+			array("message" => "Problème de connexion", "type" => AL_DANGER)
 		);
 		setMessage($messages);
 		setDisplayMessage(true);
