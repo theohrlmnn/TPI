@@ -3,7 +3,7 @@
  * File: createTPI.php
  * Author: Théo Hurlimann
  * Date: 27.05.2020
- * Description: Contient les fonctions utile pour un TPI
+ * Description: Permet de créer un TPI
  * Version: 1.0 
 */
 require_once("php/inc.all.php");
@@ -25,9 +25,9 @@ $ok = true;
 $btnCreate = filter_input(INPUT_POST, "btnCreate");
 
 if ($btnCreate) {
-    $manager = filter_input(INPUT_POST, "selectManager", FILTER_SANITIZE_STRING);
-    $candidat = filter_input(INPUT_POST, "selectCandidat", FILTER_SANITIZE_STRING);
-    $year = filter_input(INPUT_POST, "tbxYear", FILTER_SANITIZE_STRING);
+    $manager = filter_input(INPUT_POST, "selectManager", FILTER_SANITIZE_NUMBER_INT);
+    $candidat = filter_input(INPUT_POST, "selectCandidat", FILTER_SANITIZE_NUMBER_INT);
+    $year = filter_input(INPUT_POST, "tbxYear", FILTER_SANITIZE_NUMBER_INT);
 
     if ($manager == "" || $candidat == "" || $year == "") {
         $messages = array(
@@ -48,11 +48,11 @@ if ($btnCreate) {
     }
 
     if ($ok) {
-        $expert1 = filter_input(INPUT_POST, "selectExpert1", FILTER_SANITIZE_STRING);
+        $expert1 = filter_input(INPUT_POST, "selectExpert1", FILTER_SANITIZE_NUMBER_INT);
         if (!is_numeric($expert1)) {
             $expert1 = null;
         }
-        $expert2 = filter_input(INPUT_POST, "selectExpert2", FILTER_SANITIZE_STRING);
+        $expert2 = filter_input(INPUT_POST, "selectExpert2", FILTER_SANITIZE_NUMBER_INT);
         if (!is_numeric($expert2)) {
             $expert2 = null;
         }

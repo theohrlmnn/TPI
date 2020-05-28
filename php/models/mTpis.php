@@ -28,6 +28,7 @@ function getAllTpi()
         }
         return $arrTpi;
     }
+    return false;
 }
 
 function displayTPIAdmin($arrTPI)
@@ -50,21 +51,22 @@ function displayTPIAdmin($arrTPI)
     return $html;
 }
 
-//name select = select + id role = select3 
-function displayUserInSelect($textOption1,$id, $arrUser, $required = false)
+
+function displayUserInSelect($textOption1, $idSelect, $arrUser, $required = false, $valueSelect1 = "")
 {
     $html = "<div uk-form-custom=\"target: > * > span:first-child\">";
     if ($required) {
-        $html .= "<span uk-icon=\"icon: warning\"></span><select name=" . $id . ">";
+        $html .= "<span uk-icon=\"icon: warning\"></span><select required name=" . $idSelect . ">";
+    } else {
+        $html .= "<select name=" . $idSelect . ">";
     }
-    else {
-        $html .= "<select name=" . $id . ">";
-    }
-    
-    $html .= "<option value=\"\">" . $textOption1 . "</option>";
+
+    $html .= "<option value=" . $valueSelect1 . ">" . $textOption1 . "</option>";
 
     for ($i = 0; $i < count($arrUser); $i++) {
-        $html .= "<option value=" . $arrUser[$i]->id . ">" . $arrUser[$i]->firstName . " " . $arrUser[$i]->lastName . "</option>";
+        if ($valueSelect1 != $arrUser[$i]->id) {
+            $html .= "<option value=" . $arrUser[$i]->id . ">" . $arrUser[$i]->firstName . " " . $arrUser[$i]->lastName . "</option>";
+        }
     }
     $html .= "</select>";
     $html .= "<button class=\"uk-button uk-button-default\" type=\"button\" tabindex=\"-1\">";
@@ -82,11 +84,11 @@ function createTpi($tpi)
     $query = $database->prepare("INSERT INTO `tpidbthh`.`tpis` (`year`, `userCandidateID`, `userManagerID`, `userExpert1ID`, `userExpert2ID`, `title`, `cfcDomain`, `abstract`,
      `sessionStart`, `sessionEnd`, `presentationDate`, `workplace`, `submissionDate`) 
     VALUES (:year, :userCandidateID, :userManagerID, :userExpert1ID, :userExpert2ID, :title, :cfcDomain, :abstract, :sessionStart, :sessionEnd, :presentationDate, :workplace, :submissionDate);");
-    $query->bindParam(":year", $tpi->year, PDO::PARAM_STR);
-    $query->bindParam(":userCandidateID", $tpi->userCandidateId, PDO::PARAM_STR);
-    $query->bindParam(":userManagerID", $tpi->userManagerId, PDO::PARAM_STR);
-    $query->bindParam(":userExpert1ID", $tpi->userExpertId, PDO::PARAM_STR);
-    $query->bindParam(":userExpert2ID", $tpi->userExpertId2, PDO::PARAM_STR);
+    $query->bindParam(":year", $tpi->year, PDO::PARAM_INT);
+    $query->bindParam(":userCandidateID", $tpi->userCandidateId, PDO::PARAM_INT);
+    $query->bindParam(":userManagerID", $tpi->userManagerId, PDO::PARAM_INT);
+    $query->bindParam(":userExpert1ID", $tpi->userExpertId, PDO::PARAM_INT);
+    $query->bindParam(":userExpert2ID", $tpi->userExpertId2, PDO::PARAM_INT);
     $query->bindParam(":title", $tpi->title, PDO::PARAM_STR);
     $query->bindParam(":cfcDomain", $tpi->cfcDomain, PDO::PARAM_STR);
     $query->bindParam(":abstract", $tpi->abstract, PDO::PARAM_STR);
@@ -97,9 +99,52 @@ function createTpi($tpi)
     $query->bindParam(":submissionDate", $tpi->submissionDate, PDO::PARAM_STR);
 
     if ($query->execute()) {
-    return true;
+        return true;
+    } else {
+        return false;
     }
-    else {
+}
+
+function getTpiByIdToModifiyByAdmin($id)
+{
+    $database = UserDbConnection();
+    $query = $database->prepare("SELECT year, userCandidateID, userManagerID, userExpert1ID, userExpert2ID FROM tpidbthh.tpis WHERE tpiID = :tpiId");
+    $query->bindParam(":tpiId", $id, PDO::PARAM_INT);
+
+    if ($query->execute()) {
+        $row = $query->fetchAll(PDO::FETCH_ASSOC);
+        if (count($row) == 0) {
+            return false;
+        }
+        $tpi = new cTpi();
+        $tpi->id = $id;
+        $tpi->year = $row[0]['year'];
+        $tpi->userCandidateId = $row[0]['userCandidateID'];
+        $tpi->userManagerId = $row[0]['userManagerID'];
+        $tpi->userExpertId = $row[0]['userExpert1ID'];
+        $tpi->userExpertId2 = $row[0]['userExpert2ID'];
+        return $tpi;
+    }
+    return false;
+}
+
+function modifyTpi($tpi)
+{
+    $database = UserDbConnection();
+    $query = $database->prepare("UPDATE `tpidbthh`.`tpis` SET `year` = :year, `userCandidateID` = :userCandidateID,
+    `userManagerID` = :userManagerID, `userExpert1ID` = :userExpert1ID, `userExpert2ID` = :userExpert2ID 
+    WHERE (`tpiID` = :tpiId);");
+
+    $query->bindParam(":year", $tpi->year, PDO::PARAM_INT);
+    $query->bindParam(":userCandidateID", $tpi->userCandidateId, PDO::PARAM_INT);
+    $query->bindParam(":userManagerID", $tpi->userManagerId, PDO::PARAM_INT);
+    $query->bindParam(":userExpert1ID", $tpi->userExpertId, PDO::PARAM_INT);
+    $query->bindParam(":userExpert2ID", $tpi->userExpertId2, PDO::PARAM_INT);
+    $query->bindParam(":tpiId", $tpi->id, PDO::PARAM_INT);
+
+    if ($query->execute()) {
+        return true;
+    } else {
         return false;
     }
 }

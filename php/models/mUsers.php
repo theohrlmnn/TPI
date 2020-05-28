@@ -79,3 +79,12 @@ function getAllUserByRole($roleID)
     }
     return false;
 }
+
+function getNameUserByRoleByArray($id, $arrUser)
+{
+    foreach ($arrUser as $user) {
+        if ($user->id == $id) {
+            return $user->firstName. " " . $user->lastName; 
+        }
+    }
+}
