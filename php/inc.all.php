@@ -19,6 +19,7 @@ require_once 'models/mUsers.php';
 require_once 'models/mSessions.php';
 require_once 'models/mMessages.php';
 require_once 'models/mTpis.php';
+require_once 'models/mMedias.php';
 
 /**
  * INCLUDE DES CONSTANTES

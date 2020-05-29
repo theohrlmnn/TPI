@@ -30,7 +30,7 @@ $btnInvalidate = filter_input(INPUT_POST, "btnInvalidate", FILTER_SANITIZE_NUMBE
 switch ($highRole) {
     case RL_ADMINISTRATOR:
         $arrTpi = getAllTpi();
-
+        $tpiExistIn = false;
         if ($btnModify) {
             header('Location: modifyTPI.php?idTpi=' . $btnModify);
             exit;
@@ -38,18 +38,42 @@ switch ($highRole) {
 
         if ($btnDelete) {
             $tpi = getTpiByIdWithMedia($btnDelete);
-            if ($tpi->tpiStatus == ST_DRAFT) {
-                deleteTpi($tpi);
+            $listTable = array(
+                "wishes", "tpi_validations", "evaluation_criterions", "tpi_evaluations", "tpi_evaluations_criterions"
+            );
+
+            foreach ($listTable as $t) {
+                if (tpiExistIn($tpi, $t)) {
+                    $tpiExistIn = true;
+                }
+            }
+
+            if (!$tpiExistIn && $tpi->tpiStatus == ST_DRAFT) {
+                if (deleteTpi($tpi)) {
+
+                    foreach ($arrTpi as $indexArray => $t) {
+                        if ($tpi->id == $t->id) {
+                            unset($arrTpi[$indexArray]);
+                        }
+                    }
+
+                    $messages = array(
+                        array("message" => "Le TPI a bien été supprimer.", "type" => AL_SUCESS)
+                    );
+                    setMessage($messages);
+                    setDisplayMessage(true);
+                };
+            } else {
+                # TO DO : Gerer information dans plusieurs table Confirmation bien supprimer tpi
             }
         }
 
         if ($btnInvalidate) {
-            //$tpi = getTpiByIdWithMedia($btnDelete);
             $tpi = getTpiByIdInArray($btnInvalidate, $arrTpi);
             if ($tpi->tpiStatus == ST_SUBMITTED) {
                 if (invalidateTpi($tpi)) {
                     $tpiUpdate = getTpiByID($tpi->id);
-                    foreach ($arrTpi as $indexArray=>$tpi) {
+                    foreach ($arrTpi as $indexArray => $tpi) {
                         if ($tpi->id == $tpiUpdate->id) {
                             $arrTpi[$indexArray] = $tpiUpdate;
                         }
@@ -74,14 +98,52 @@ switch ($highRole) {
                 setDisplayMessage(true);
             }
         }
+        $displayTPI = displayTPIAdmin($arrTpi);
         break;
     case RL_EXPERT:
+        $arrTpi = getAllTpiByIdUserSession();
 
+        if ($btnInvalidate) {
+            $tpi = getTpiByIdInArray($btnInvalidate, $arrTpi);
+            $idUser = getIdUserSession();
+            if (
+                $tpi->tpiStatus == ST_SUBMITTED && $tpi->userExpertId == $idUser ||
+                $tpi->tpiStatus == ST_SUBMITTED && $tpi->userExpertId2 == $idUser
+            ) {
+                if (invalidateTpi($tpi)) {
+                    $tpiUpdate = getTpiByID($tpi->id);
+                    foreach ($arrTpi as $indexArray => $tpi) {
+                        if ($tpi->id == $tpiUpdate->id) {
+                            $arrTpi[$indexArray] = $tpiUpdate;
+                        }
+                    }
+                    $messages = array(
+                        array("message" => "Le TPI a bien été invalidé.", "type" => AL_SUCESS)
+                    );
+                    setMessage($messages);
+                    setDisplayMessage(true);
+                } else {
+                    $messages = array(
+                        array("message" => "Une erreur est survenue.", "type" => AL_DANGER)
+                    );
+                    setMessage($messages);
+                    setDisplayMessage(true);
+                }
+            } else {
+                $messages = array(
+                    array("message" => "Une erreur est survenue.", "type" => AL_DANGER)
+                );
+                setMessage($messages);
+                setDisplayMessage(true);
+            }
+        }
+
+        $displayTPI = displayTPIExpert($arrTpi);
         break;
     case RL_MANAGER:
 
         break;
-    case RL_NOBODY:
+    default:
         $messages = array(
             array("message" => "Vous ne pouvez pas voir la liste de TPI.", "type" => AL_WARNING)
         );
@@ -113,7 +175,7 @@ switch ($highRole) {
 <body>
     <?php include_once("php/includes/nav.php");
     echo displayMessage();
-    echo displayTPIAdmin($arrTpi);
+    echo $displayTPI;
     ?>
     <!-- JS FILES -->
     <script src="js/uikit.js"></script>

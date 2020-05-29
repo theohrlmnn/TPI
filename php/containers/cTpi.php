@@ -18,7 +18,7 @@ class cTpi{
     public function __construct($InTpiId = -1,$InYear = "", $InUserCandidateId = null, $InUserManagerId = null,
         $InUserExpertId = null, $InUserExpertId2 = null, $InTpiStatus = "draft", $InTitle = null, $InCfcDomain = null,
         $InAbstract = null, $InSessionStart = null, $SessionEnd = null, $InPresentationDate = null, $InWorkplace = null, 
-        $InDescription = null, $InSubmissionDate = null, $InPdfPath = null,$InEvaluationCriterions = null,$InMedias = null){
+        $InDescription = null, $InSubmissionDate = null, $InPdfPath = null,$InEvaluationCriterions = array(),$InMedias = array()){
         $this->id = $InTpiId;
         $this->year = $InYear;
         $this->userCandidateId = $InUserCandidateId;

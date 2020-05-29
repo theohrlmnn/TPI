@@ -58,6 +58,17 @@ function getFirstNameUserSession()
 }
 
  /**
+ * Fonction permettant de connaitre le id d'un utilisateur si il est connecté
+ *
+ * @return string Retourne l'id
+ */
+function getIdUserSession()
+{
+    if (isset($_SESSION['user']['userLogged'])) 
+        return $_SESSION['user']['userLogged']->id;
+}
+
+ /**
  * Fonction permettant de connaitre le role d'un utilisateur si il est connecté
  *
  * @return string Retourne le prénom

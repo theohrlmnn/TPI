@@ -8,15 +8,15 @@
 */
 require_once("php/inc.all.php");
 
-if (!islogged() && min(getRoleUserSession()) != RL_ADMINISTRATOR) {
+if (!islogged() || min(getRoleUserSession()) != RL_ADMINISTRATOR) {
 
     $messages = array(
-        array("message" => "Vous devez être connecté pour voir ceci.", "type" => AL_DANGER)
+        array("message" => "Vous ne pouvez pas accéder à cette page.", "type" => AL_DANGER)
     );
     setMessage($messages);
     setDisplayMessage(true);
 
-    header('Location: login.php');
+    header('Location: home.php');
     exit;
 }
 
@@ -73,10 +73,8 @@ if ($btnCreate) {
         if (empty($datePresentation)) {
             $datePresentation = null;
         }
-        $dateSubmission = filter_input(INPUT_POST, "tbxDateSubmission", FILTER_SANITIZE_STRING);
-        if (empty($dateSubmission)) {
-            $dateSubmission = null;
-        }
+        $dateSubmission = date("Y-m-d H:i:s");
+
 
         $tpi = new cTpi();
         $tpi->year = $year;
@@ -93,7 +91,13 @@ if ($btnCreate) {
         $tpi->workplace = $workplace;
         $tpi->submissionDate = $dateSubmission;
 
-        createTpi($tpi);
+        if (createTpi($tpi)) {
+            $messages = array(
+                array("message" => "Le TPI a bien été créé", "type" => AL_SUCESS)
+            );
+            setMessage($messages);
+            setDisplayMessage(true);
+        }
     }
 }
 
@@ -176,28 +180,21 @@ $arrUserExpert = getAllUserByRole(RL_EXPERT);
                 <div class="uk-inline uk-width-1-1">
                     <label class="uk-form-label" for="form-horizontal-text">Date du début de la session :</label>
                     <span class="uk-form-icon uk-form-icon-flip"></span>
-                    <input name="tbxDateStartSession" class="uk-input uk-border-pill" placeholder="Résumé" type="date">
+                    <input name="tbxDateStartSession" class="uk-input uk-border-pill" type="date">
                 </div>
             </div>
             <div class="uk-margin-small">
                 <div class="uk-inline uk-width-1-1">
                     <label class="uk-form-label" for="form-horizontal-text">Date de la fin de la session :</label>
                     <span class="uk-form-icon uk-form-icon-flip"></span>
-                    <input name="tbxDateEndSession" class="uk-input uk-border-pill" placeholder="Résumé" type="date">
+                    <input name="tbxDateEndSession" class="uk-input uk-border-pill" type="date">
                 </div>
             </div>
             <div class="uk-margin-small">
                 <div class="uk-inline uk-width-1-1">
                     <label class="uk-form-label" for="form-horizontal-text">Date de la présentation du TPI :</label>
                     <span class="uk-form-icon uk-form-icon-flip"></span>
-                    <input name="tbxDatePresentation" class="uk-input uk-border-pill" placeholder="Résumé" type="date">
-                </div>
-            </div>
-            <div class="uk-margin-small">
-                <div class="uk-inline uk-width-1-1">
-                    <label class="uk-form-label" for="form-horizontal-text">Date du rendu du TPI :</label>
-                    <span class="uk-form-icon uk-form-icon-flip"></span>
-                    <input name="tbxDateSubmission" class="uk-input uk-border-pill" placeholder="Résumé" type="date">
+                    <input name="tbxDatePresentation" class="uk-input uk-border-pill" type="date">
                 </div>
             </div>
             <div>
