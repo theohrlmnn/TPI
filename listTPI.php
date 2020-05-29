@@ -32,7 +32,7 @@ switch ($highRole) {
         $arrTpi = getAllTpi();
         $tpiExistIn = false;
         if ($btnModify) {
-            header('Location: modifyTPI.php?idTpi=' . $btnModify);
+            header('Location: modifyTPI.php?tpiId=' . $btnModify);
             exit;
         }
 
@@ -101,11 +101,20 @@ switch ($highRole) {
         $displayTPI = displayTPIAdmin($arrTpi);
         break;
     case RL_EXPERT:
-        $arrTpi = getAllTpiByIdUserSession();
+        $arrTpi = getAllTpiByIdUserExpertSession();
+        $idUser = getIdUserSession();
+
+        if ($btnModify) {
+            $tpi = getTpiByIdInArray($btnModify, $arrTpi);
+            if ($tpi->userExpertId == $idUser || $tpi->userExpertId2 == $idUser) {
+                header('Location: modifyTPI.php?tpiId=' . $btnModify);
+                exit;
+            }
+        }
 
         if ($btnInvalidate) {
             $tpi = getTpiByIdInArray($btnInvalidate, $arrTpi);
-            $idUser = getIdUserSession();
+
             if (
                 $tpi->tpiStatus == ST_SUBMITTED && $tpi->userExpertId == $idUser ||
                 $tpi->tpiStatus == ST_SUBMITTED && $tpi->userExpertId2 == $idUser
@@ -141,7 +150,51 @@ switch ($highRole) {
         $displayTPI = displayTPIExpert($arrTpi);
         break;
     case RL_MANAGER:
+        $btnSubmit = filter_input(INPUT_POST, "btnSubmit", FILTER_SANITIZE_NUMBER_INT);
+        $arrTpi = getAllTpiByIdUserManagerSession();
+        $idUser = getIdUserSession();
 
+        if ($btnModify) {
+            $tpi = getTpiByIdInArray($btnModify, $arrTpi);
+            if ($tpi->userMangerId == $idUser) {
+                header('Location: modifyTPI.php?tpiId=' . $btnModify);
+                exit;
+            }
+        }
+
+        if ($btnSubmit) {
+            $tpi = getTpiByIdInArray($btnSubmit, $arrTpi);
+
+            if ($tpi->tpiStatus == ST_DRAFT && $tpi->userManagerId == $idUser) {
+                if (submitTpi($tpi)) {
+                    $tpiUpdate = getTpiByID($tpi->id);
+                    foreach ($arrTpi as $indexArray => $tpi) {
+                        if ($tpi->id == $tpiUpdate->id) {
+                            $arrTpi[$indexArray] = $tpiUpdate;
+                        }
+                    }
+                    $messages = array(
+                        array("message" => "Le TPI a bien été invalidé.", "type" => AL_SUCESS)
+                    );
+                    setMessage($messages);
+                    setDisplayMessage(true);
+                } else {
+                    $messages = array(
+                        array("message" => "Une erreur est survenue.", "type" => AL_DANGER)
+                    );
+                    setMessage($messages);
+                    setDisplayMessage(true);
+                }
+            } else {
+                $messages = array(
+                    array("message" => "Une erreur est survenue.", "type" => AL_DANGER)
+                );
+                setMessage($messages);
+                setDisplayMessage(true);
+            }
+        }
+
+        $displayTPI = displayTPIManager($arrTpi);
         break;
     default:
         $messages = array(

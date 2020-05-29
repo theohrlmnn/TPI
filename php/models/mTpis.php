@@ -8,6 +8,10 @@
 */
 require_once("php/inc.all.php");
 
+require "vendor/autoload.php";
+
+use Spipu\Html2Pdf\Html2Pdf;
+
 function getAllTpi()
 {
     $database = UserDbConnection();
@@ -96,6 +100,32 @@ function displayTPIExpert($arrTpi)
         $html .= "<h3 class=\"uk-card-title\">TPI : " . $arrTpi[$i]->title . "</h3>";
         if ($arrTpi[$i]->tpiStatus == ST_SUBMITTED) {
             $html .= "<button name=\"btnInvalidate\" value=" . $arrTpi[$i]->id . " class=\"uk-margin-top uk-margin-right uk-border-pill uk-position-top-right uk-button uk-button-secondary\">Invalider</button>";
+        }
+        $html .= "<p>Resumé : " . $arrTpi[$i]->abstract . "</p>";
+        $html .= "<button name=\"btnModify\" value=" . $arrTpi[$i]->id . " class=\"uk-button uk-button-default uk-border-pill\">MODIFIER</button>";
+        $html .= "</form>";
+        $html .= "</div>";
+        $html .= "</div>";
+    }
+
+    $html .= "</div>";
+    $html .= "</div>";
+
+    return $html;
+}
+
+function displayTPIManager($arrTpi)
+{
+    $html = "<div class=\"uk-container uk-container-expand\">";
+    $html .= "<div class=\"uk-child-width-1-1@m uk-card-small \"uk-grid uk-scrollspy=\"cls: uk-animation-fade; target: .uk-card; delay: 10; repeat: false\">";
+
+    for ($i = 0; $i < count($arrTpi); $i++) {
+        $html .= "<div>";
+        $html .= "<div class=\"uk-margin-medium-top uk-card uk-card-default uk-card-body\">";
+        $html .= "<form action=\"listTPI.php\" method=\"POST\">";
+        $html .= "<h3 class=\"uk-card-title\">TPI : " . $arrTpi[$i]->title . "</h3>";
+        if ($arrTpi[$i]->tpiStatus == ST_DRAFT) {
+            $html .= "<button name=\"btnSubmit\" value=" . $arrTpi[$i]->id . " class=\"uk-margin-top uk-margin-right uk-border-pill uk-position-top-right uk-button uk-button-primary\">Soumettre</button>";
         }
         $html .= "<p>Resumé : " . $arrTpi[$i]->abstract . "</p>";
         $html .= "<button name=\"btnModify\" value=" . $arrTpi[$i]->id . " class=\"uk-button uk-button-default uk-border-pill\">MODIFIER</button>";
@@ -205,7 +235,7 @@ function getTpiByIdToModifiyByAdmin($id)
     return false;
 }
 
-function getAllTpiByIdUserSession()
+function getAllTpiByIdUserExpertSession()
 {
     $id = getIdUserSession();
     $database = UserDbConnection();
@@ -233,8 +263,37 @@ function getAllTpiByIdUserSession()
     return false;
 }
 
+function getAllTpiByIdUserManagerSession()
+{
+    $id = getIdUserSession();
+    $database = UserDbConnection();
+    $query = $database->prepare("SELECT tpiID, year, userCandidateID, userManagerID, tpiStatus, title, cfcDomain, abstract, description, pdfPath 
+    FROM tpidbthh.tpis 
+    WHERE userManagerID = :userManagerID");
+    $query->bindParam(":userManagerID", $id, PDO::PARAM_INT);
+    if ($query->execute()) {
+        $row = $query->fetchAll(PDO::FETCH_ASSOC);
+        $arrTpi = array();
+        for ($i = 0; $i < count($row); $i++) {
+            $tpi = new cTpi();
+            $tpi->id = $row[$i]['tpiID'];
+            $tpi->year = $row[$i]['year'];
+            $tpi->userCandidateId = $row[$i]['userCandidateID'];
+            $tpi->userManagerId = $row[$i]['userManagerID'];
+            $tpi->tpiStatus = $row[$i]['tpiStatus'];
+            $tpi->title = $row[$i]['title'];
+            $tpi->cfcDomain = $row[$i]['cfcDomain'];
+            $tpi->abstract = $row[$i]['abstract'];
+            $tpi->description = $row[$i]['description'];
+            $tpi->pdfPath = $row[$i]['pdfPath'];
+            array_push($arrTpi, $tpi);
+        }
+        return $arrTpi;
+    }
+    return false;
+}
 
-function modifyTpi($tpi)
+function modifyTpiByAdmin($tpi)
 {
     $database = UserDbConnection();
     $query = $database->prepare("UPDATE `tpidbthh`.`tpis` SET `year` = :year, `userCandidateID` = :userCandidateID,
@@ -246,6 +305,22 @@ function modifyTpi($tpi)
     $query->bindParam(":userManagerID", $tpi->userManagerId, PDO::PARAM_INT);
     $query->bindParam(":userExpert1ID", $tpi->userExpertId, PDO::PARAM_INT);
     $query->bindParam(":userExpert2ID", $tpi->userExpertId2, PDO::PARAM_INT);
+    $query->bindParam(":tpiId", $tpi->id, PDO::PARAM_INT);
+
+    if ($query->execute()) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function modifyTpiByExpert($tpi)
+{
+    $database = UserDbConnection();
+    $query = $database->prepare("UPDATE `tpidbthh`.`tpis` SET presentationDate = :presentationDate
+    WHERE (`tpiID` = :tpiId);");
+    $date = $tpi->presentationDate;
+    $query->bindParam(":presentationDate", $tpi->presentationDate, PDO::PARAM_STR);
     $query->bindParam(":tpiId", $tpi->id, PDO::PARAM_INT);
 
     if ($query->execute()) {
@@ -269,6 +344,23 @@ function invalidateTpi($tpi)
     }
 }
 
+function submitTpi($tpi)
+{
+    $dateSubmission = date("Y-m-d H:i:s");
+    $pdfPath = createPdf($tpi);
+    $database = UserDbConnection();
+    $query = $database->prepare("UPDATE `tpidbthh`.`tpis` SET `tpiStatus` = :tpiStatus, `pdfPath` = :pdfPath, `submissionDate` = :submissionDate WHERE (`tpiID` = :tpiID);");
+    $query->bindValue(":tpiStatus", ST_SUBMITTED, PDO::PARAM_STR);
+    $query->bindValue(":pdfPath", $pdfPath, PDO::PARAM_STR);
+    $query->bindValue(":submissionDate", $dateSubmission, PDO::PARAM_STR);
+    $query->bindParam(":tpiID", $tpi->id, PDO::PARAM_STR);
+    if ($query->execute()) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 function deletePdf($tpi)
 {
     try {
@@ -277,6 +369,16 @@ function deletePdf($tpi)
     } catch (Exception $e) {
         return false;
     }
+}
+
+function createPdf($tpi)
+{
+    $user = getUserById($tpi->userCandidateId);
+    //"/var/www/html/TPI/php/modelspdf/Enonce_TPI_2020_76_Cart_Thibault.pdf"
+    $html2pdf = new Html2Pdf();
+    $html2pdf->writeHTML($tpi->description);
+    $path = PATH_CREATEPDF . "Enonce_TPI_".$tpi->year."_".$tpi->id."_".$user->lastName."_".$user->firstName.".pdf";
+    $html2pdf->output($path, 'F');
 }
 
 function getTpiByIdInArray($id, $arrTpi)
@@ -375,27 +477,32 @@ function tpiExistIn($tpi, $nameTable)
     }
 }
 
+function getTimeAndDateToTpi($tpi)
+{
+    return explode(' ', $tpi->presentationDate);
+}
+
 function displayFormForAdminWithDisplayMessage($tpi, $arrUserManager, $arrUserExpert, $arrUserCandidat, $problem)
 {
     $emptyExpert1 = false;
     $emptyExpert2 = false;
 
-    $fullNameManager = getNameUserByRoleByArray($tpi->userManagerId, $arrUserManager);
-    $fullNameCandidat = getNameUserByRoleByArray($tpi->userCandidateId, $arrUserCandidat);
+    $fullNameManager = getNameUserByIdByArray($tpi->userManagerId, $arrUserManager);
+    $fullNameCandidat = getNameUserByIdByArray($tpi->userCandidateId, $arrUserCandidat);
 
     if ($tpi->userExpertId !== "") {
-        $fullNameExpert1 = getNameUserByRoleByArray($tpi->userExpertId, $arrUserExpert);
+        $fullNameExpert1 = getNameUserByIdByArray($tpi->userExpertId, $arrUserExpert);
     } else {
         $emptyExpert1 = true;
     }
 
     if ($tpi->userExpertId2 !== "") {
-        $fullNameExpert2 = getNameUserByRoleByArray($tpi->userExpertId2, $arrUserExpert);
+        $fullNameExpert2 = getNameUserByIdByArray($tpi->userExpertId2, $arrUserExpert);
     } else {
         $emptyExpert2 = true;
     }
 
-    $html = "<form class=\"toggle-class uk-flex uk-flex-center uk-background-muted uk-height-viewport\" action=\"modifyTPI.php?idTpi=" . $tpi->id . " method=\"POST\">";
+    $html = "<form class=\"toggle-class uk-flex uk-flex-center uk-background-muted uk-height-viewport\" action=\"modifyTPI.php?tpiId=" . $tpi->id . "\" method=\"POST\">";
     $html .= "<fieldset class=\"uk-fieldset uk-margin-medium-top\">";
     $html .= displayMessage();
     if ($problem) {
@@ -434,18 +541,27 @@ function displayFormForAdminWithDisplayMessage($tpi, $arrUserManager, $arrUserEx
     return $html;
 }
 
-function displayFormForExpertWithDisplayMessage($tpi, $problem)
+function displayFormForExpertWithDisplayMessage($tpi)
 {
 
-    $html = "<form class=\"toggle-class uk-flex uk-flex-center uk-background-muted uk-height-viewport\" action=\"modifyTPI.php?idTpi=" . $tpi->id . " method=\"POST\">";
+    $arrDateTime = getTimeAndDateToTpi($tpi);
+
+    $html = "<form class=\"toggle-class uk-flex uk-flex-center uk-background-muted uk-height-viewport\" action=\"modifyTPI.php?tpiId=" . $tpi->id . "\" method=\"POST\">";
     $html .= "<fieldset class=\"uk-fieldset uk-margin-medium-top\">";
     $html .= displayMessage();
-    if ($problem) {
+    if (count($arrDateTime) == 2) {
         $html .=  "<div class=\"uk-margin-small\">";
         $html .=  "<div class=\"uk-inline uk-width-1-1\">";
         $html .=  "<label class=\"uk-form-label\" for=\"form-horizontal-text\">Date de la présentation du TPI :</label>";
         $html .=  "<span class=\"uk-form-icon uk-form-icon-flip\"></span>";
-        $html .=  "<input name=\"tbxDatePresentation\" value=" . $tpi->presentationDate . " class=\"uk-input uk-border-pill\" placeholder=\"Résumé\" type=\"date\">";
+        $html .=  "<input name=\"tbxDatePresentation\" value=" . $arrDateTime[0] . " class=\"uk-input uk-border-pill\" placeholder=\"Résumé\" type=\"date\">";
+        $html .=  "</div>";
+        $html .=  "</div>";
+        $html .=  "<div class=\"uk-margin-small\">";
+        $html .=  "<div class=\"uk-inline uk-width-1-1\">";
+        $html .=  "<label class=\"uk-form-label\" for=\"form-horizontal-text\">Heure de la présentation du TPI :</label>";
+        $html .=  "<span class=\"uk-form-icon uk-form-icon-flip\"></span>";
+        $html .=  "<input name=\"tbxTimePresentation\" value=" . $arrDateTime[1] . " class=\"uk-input uk-border-pill\" placeholder=\"Résumé\" type=\"time\">";
         $html .=  "</div>";
         $html .=  "</div>";
     } else {
@@ -453,7 +569,14 @@ function displayFormForExpertWithDisplayMessage($tpi, $problem)
         $html .=  "<div class=\"uk-inline uk-width-1-1\">";
         $html .=  "<label class=\"uk-form-label\" for=\"form-horizontal-text\">Date de la présentation du TPI :</label>";
         $html .=  "<span class=\"uk-form-icon uk-form-icon-flip\"></span>";
-        $html .=  "<input name=\"tbxDatePresentation\" class=\"uk-input uk-border-pill\" placeholder=\"Résumé\" type=\"time\">";
+        $html .=  "<input name=\"tbxDatePresentation\" class=\"uk-input uk-border-pill\" placeholder=\"Résumé\" type=\"date\">";
+        $html .=  "</div>";
+        $html .=  "</div>";
+        $html .=  "<div class=\"uk-margin-small\">";
+        $html .=  "<div class=\"uk-inline uk-width-1-1\">";
+        $html .=  "<label class=\"uk-form-label\" for=\"form-horizontal-text\">Date de la présentation du TPI :</label>";
+        $html .=  "<span class=\"uk-form-icon uk-form-icon-flip\"></span>";
+        $html .=  "<input name=\"tbxTimePresentation\" class=\"uk-input uk-border-pill\" placeholder=\"Résumé\" type=\"time\">";
         $html .=  "</div>";
         $html .=  "</div>";
     }
@@ -464,6 +587,86 @@ function displayFormForExpertWithDisplayMessage($tpi, $problem)
     $html .= "</div>";
     $html .= "</fieldset>";
     $html .= "</form>";
+
+    return $html;
+}
+
+function displayFormForManagerWithDisplayMessage($tpi)
+{
+
+    $arrDateTime = getTimeAndDateToTpi($tpi);
+
+    $html = "<form class=\"toggle-class uk-flex uk-flex-center uk-background-muted uk-height-viewport\" action=\"modifyTPI.php\" method=\"POST\">";
+
+    $html .= "<fieldset class=\"uk-fieldset uk-margin-medium-top\">";
+           
+    $html .= displayMessage();
+           
+    $html .= "<div class=\"uk-margin-small\">";
+    $html .= "<label class=\"uk-form-label\" for=\"form-horizontal-text\">Titre</label>";
+    $html .= "<div class=\"uk-inline uk-width-1-1\">";
+    $html .= "<span class=\"uk-form-icon uk-form-icon-flip\" data-uk-icon=\"icon: calendar\"></span>";
+    $html .= "<input name=\"tbxTitle\" class=\"uk-input uk-border-pill\" placeholder=\"Outil de collaboration pour le collège d’experts, modules Répartition et ...\" type=\"text\">";               
+    $html .= "</div>";
+    $html .= "</div>";
+
+    $html .= "<div class=\"uk-margin-small\">";
+    $html .= "<label class=\"uk-form-label\" for=\"form-horizontal-text\">Domaine CFC</label>";
+    $html .= "<div class=\"uk-inline uk-width-1-1\">";
+    $html .= "<span class=\"uk-form-icon uk-form-icon-flip\" data-uk-icon=\"icon: info\"></span>";
+    $html .= "<input name=\"tbxDomainCFC\" class=\"uk-input uk-border-pill\" placeholder=\"Développement d'applications\" type=\"text\">";
+    $html .= "</div>";
+    $html .= "</div>";
+            
+    $html .= "<div class=\"uk-margin-small\">";
+    $html .= "<label class=\"uk-form-label\" for=\"form-horizontal-text\">Résumé</label>";
+    $html .= "<div class=\"uk-inline uk-width-1-1\">";
+    $html .= "<span class=\"uk-form-icon uk-form-icon-flip\" data-uk-icon=\"icon: comment\"></span>";
+    $html .= "<input name=\"tbxAbstract\" class=\"uk-input uk-border-pill\" placeholder=\"Le but principal de cette application est de donner aux membres du collège ...\" type=\"text\">";
+    $html .= "</div>";
+    $html .= "</div>";
+
+    $html .= "<div class=\"uk-margin-small\">";
+    $html .= "<label class=\"uk-form-label\" for=\"form-horizontal-text\">Lieu de travail</label>";
+    $html .= "<div class=\"uk-inline uk-width-1-1\">";
+    $html .= "<span class=\"uk-form-icon uk-form-icon-flip\" data-uk-icon=\"icon: home\"></span>";
+    $html .= "<input name=\"tbxWorkPlace\" class=\"uk-input uk-border-pill\" placeholder=\"A domicile\" type=\"text\">";
+    $html .= "</div>";
+    $html .= "</div>";
+
+    $html .= "<div class=\"uk-margin-bottom\">";
+    $html .= "<button name=\"btnCreate\" value=\"Send\" type=\"submit\" class=\"uk-button uk-button-primary uk-border-pill uk-width-1-1\">Modifer TPI</button>";
+    $html .= "</div>";
+
+    $html .= "</fieldset>";
+    $html .= "<fieldset class=\"uk-fieldset uk-flex-left uk-margin-medium-left uk-margin-medium-top\">";
+    $html .= "<div class=\"uk-margin-small\">";
+    $html .= "<div class=\"uk-inline uk-width-1-1\">";
+    $html .= "<label class=\"uk-form-label\" for=\"form-horizontal-text\">Date du début de la session :</label>";
+    $html .= "<span class=\"uk-form-icon uk-form-icon-flip\"></span>";
+    $html .= "<input name=\"tbxDateStartSession\" class=\"uk-input uk-border-pill\" type=\"date\">";
+    $html .= "</div>";
+    $html .= "</div>";
+
+    $html .= "<div class=\"uk-margin-small\">";
+    $html .= "<div class=\"uk-inline uk-width-1-1\">";
+    $html .= "<label class=\"uk-form-label\" for=\"form-horizontal-text\">Date de la fin de la session :</label>";            
+    $html .= "<span class=\"uk-form-icon uk-form-icon-flip\"></span>";
+    $html .= "<input name=\"tbxDateEndSession\" class=\"uk-input uk-border-pill\" type=\"date\">";
+    $html .= "</div>";
+    $html .= "</div>";
+
+    $html .= "<div class=\"uk-margin-small\">";
+    $html .= "<div class=\"uk-inline uk-width-1-1\">";
+    $html .= "<label class=\"uk-form-label\" for=\"form-horizontal-text\">Date de la présentation du TPI :</label>";
+    $html .= "<span class=\"uk-form-icon uk-form-icon-flip\"></span>";
+    $html .= "<input name=\"tbxDatePresentation\" class=\"uk-input uk-border-pill\" type=\"date\">";
+    $html .= "</div>";
+    $html .= "</div>";
+
+    $html .= "</fieldset>";
+
+    //$html .= "</form>";
 
     return $html;
 }

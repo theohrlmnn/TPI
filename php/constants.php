@@ -32,4 +32,5 @@ define ('ST_VALID','valid');
 //Les différents chemin utiles
 define ('PATH_PDF','pdf/');
 define ('PATH_MEDID','medias/');
+define ('PATH_CREATEPDF','/var/www/html/TPI/pdf/')
 ?>

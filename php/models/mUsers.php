@@ -80,7 +80,8 @@ function getAllUserByRole($roleID)
     return false;
 }
 
-function getNameUserByRoleByArray($id, $arrUser)
+//A changer faut rendre cUser pas un string  
+function getNameUserByIdByArray($id, $arrUser)
 {
     foreach ($arrUser as $user) {
         if ($user->id == $id) {
@@ -88,5 +89,25 @@ function getNameUserByRoleByArray($id, $arrUser)
         }
     }
 
+    return false;
+}
+
+function getUserById($id)
+{
+    $arrUser = array();
+    $database = UserDbConnection();
+
+    $query = $database->prepare("SELECT users.lastName, users.firstName FROM users WHERE userID = :userID");
+    $query->bindParam(":userID", $id, PDO::PARAM_STR);
+
+    if ($query->execute()) {
+        $row = $query->fetchAll(PDO::FETCH_ASSOC);
+        
+        $u = new cUser();
+        $u->lastName = $row[0]["lastName"];
+        $u->firstName = $row[0]["firstName"];
+        
+        return $u;
+    }
     return false;
 }
