@@ -11,6 +11,11 @@ require_once("php/inc.all.php");
 $btnLogin = filter_input(INPUT_POST, "btnLogin");
 
 if (islogged()) {
+	$role = min(getRoleUserSession());
+	if ($role == RL_CANDIDATE) {
+		header('Location: viewPDF.php');
+		exit;
+	}
 	header('Location: home.php');
 	exit;
 }

@@ -20,6 +20,8 @@ if (!islogged()) {
     exit;
 }
 
+
+
 $btnModify = filter_input(INPUT_POST, "btnModify");
 $idTpi = filter_input(INPUT_GET, "tpiId", FILTER_SANITIZE_NUMBER_INT);
 
@@ -49,7 +51,8 @@ switch ($highRole) {
             );
             setMessage($messages);
             setDisplayMessage(true);
-            $ok = false;
+            header('Location: listTPI.php');
+            exit;
         }
 
         if ($btnModify) {
@@ -114,7 +117,8 @@ switch ($highRole) {
             );
             setMessage($messages);
             setDisplayMessage(true);
-            $ok = false;
+            header('Location: listTPI.php');
+            exit;
         }
 
         if ($btnModify) {
@@ -157,7 +161,10 @@ switch ($highRole) {
                         $presentationDate .= $presentationTime[4] . $presentationTime[5];
                     }
                 }
-
+                //TO DO AJOUTER VERIFICATION DATEDEBUT < FIN ET DATE PRESENTATION 
+                if (true) {
+                    # code...
+                }
                 if ($tpi->presentationDate != $presentationDate) {
                     $tpi->presentationDate = $presentationDate;
                     if (modifyTpiByExpert($tpi)) {
@@ -191,7 +198,8 @@ switch ($highRole) {
             );
             setMessage($messages);
             setDisplayMessage(true);
-            $ok = false;
+            header('Location: listTPI.php');
+            exit;
         }
 
         if ($btnModify) {

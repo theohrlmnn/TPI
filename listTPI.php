@@ -21,13 +21,22 @@ if (!islogged()) {
 }
 
 $arrRoles = getRoleUserSession();
-$highRole = min($arrRoles);
+$role = min($arrRoles);
 
 $btnModify = filter_input(INPUT_POST, "btnModify", FILTER_SANITIZE_NUMBER_INT);
 $btnDelete = filter_input(INPUT_POST, "btnDelete", FILTER_SANITIZE_NUMBER_INT);
 $btnInvalidate = filter_input(INPUT_POST, "btnInvalidate", FILTER_SANITIZE_NUMBER_INT);
 
-switch ($highRole) {
+$radioRole = filter_input(INPUT_GET,'radioRole',FILTER_SANITIZE_STRING);
+
+if (count($arrRoles) > 1) {
+    if ($radioRole != null) {
+        $role = $radioRole;
+    }
+}
+
+
+switch ($role) {
     case RL_ADMINISTRATOR:
         $arrTpi = getAllTpi();
         $tpiExistIn = false;
@@ -156,7 +165,7 @@ switch ($highRole) {
 
         if ($btnModify) {
             $tpi = getTpiByIdInArray($btnModify, $arrTpi);
-            if ($tpi->userMangerId == $idUser) {
+            if ($tpi->userManagerId == $idUser) {
                 header('Location: modifyTPI.php?tpiId=' . $btnModify);
                 exit;
             }
@@ -228,11 +237,21 @@ switch ($highRole) {
 <body>
     <?php include_once("php/includes/nav.php");
     echo displayMessage();
+    echo buttonChangeRoleListTpi($arrRoles, $role);
     echo $displayTPI;
+    ?>
+    
+    <?php
+    
     ?>
     <!-- JS FILES -->
     <script src="js/uikit.js"></script>
     <script src="js/uikit-icons.js"></script>
+    <script>
+        function changeRole(val) {
+            window.location.href = "listTPI.php?radioRole=" + val;
+        }
+    </script>
 </body>
 
 </html>

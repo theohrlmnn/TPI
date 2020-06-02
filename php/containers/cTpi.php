@@ -15,8 +15,8 @@ class cTpi{
      /**
      * @brief   Class Constructor avec paramètres par défaut pour construire l'objet
      */
-    public function __construct($InTpiId = -1,$InYear = "", $InUserCandidateId = null, $InUserManagerId = null,
-        $InUserExpertId = null, $InUserExpertId2 = null, $InTpiStatus = "draft", $InTitle = null, $InCfcDomain = null,
+    public function __construct($InTpiId = -1,$InYear = null, $InUserCandidateId = null, $InUserManagerId = null,
+        $InUserExpertId = null, $InUserExpertId2 = null, $InTpiStatus = null, $InTitle = null, $InCfcDomain = null,
         $InAbstract = null, $InSessionStart = null, $SessionEnd = null, $InPresentationDate = null, $InWorkplace = null, 
         $InDescription = null, $InSubmissionDate = null, $InPdfPath = null,$InEvaluationCriterions = array(),$InMedias = array()){
         $this->id = $InTpiId;

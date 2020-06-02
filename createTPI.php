@@ -8,17 +8,6 @@
 */
 require_once("php/inc.all.php");
 
-if (!islogged() || min(getRoleUserSession()) != RL_ADMINISTRATOR) {
-
-    $messages = array(
-        array("message" => "Vous ne pouvez pas accéder à cette page.", "type" => AL_DANGER)
-    );
-    setMessage($messages);
-    setDisplayMessage(true);
-
-    header('Location: home.php');
-    exit;
-}
 
 $ok = true;
 
@@ -123,16 +112,16 @@ $arrUserExpert = getAllUserByRole(RL_EXPERT);
 <body>
     <?php include_once("php/includes/nav.php");
     ?>
-    <form class="toggle-class uk-flex uk-flex-center uk-background-muted uk-height-viewport" action="createTPI.php" method="POST">
+    <form class="toggle-class uk-flex uk-flex-center uk-height-viewport" action="createTPI.php" method="POST">
 
         <fieldset class="uk-fieldset uk-margin-medium-top">
             <?php
             echo displayMessage();
-            ?>
-            <?php echo displayUserInSelect("Chef de Projet", "selectManager", $arrUserManager, true); ?>
-            <?php echo displayUserInSelect("Candidat", "selectCandidat", $arrUserCandidat, true); ?>
-            <?php echo displayUserInSelect("Expert 1", "selectExpert1", $arrUserExpert); ?>
-            <?php echo displayUserInSelect("Expert 2", "selectExpert2", $arrUserExpert); ?>
+
+            echo displayUserInSelect("Chef de Projet", "selectManager", $arrUserManager, true);
+            echo displayUserInSelect("Candidat", "selectCandidat", $arrUserCandidat, true);
+            echo displayUserInSelect("Expert 1", "selectExpert1", $arrUserExpert);
+            echo displayUserInSelect("Expert 2", "selectExpert2", $arrUserExpert); ?>
 
             <div class="uk-margin-small">
                 <span uk-icon="icon: warning"></span>
