@@ -46,6 +46,16 @@ function isLogged()
     
 }
 
+function getIdTpiSession()
+{
+    return $_SESSION['tpi']['id'];
+}
+
+function setIdTpiSession($id)
+{
+    $_SESSION['tpi']['id'] = $id;
+}
+
  /**
  * Fonction permettant de connaitre le prénom d'un utilisateur si il est connecté
  *
@@ -83,4 +93,3 @@ function destroySession()
 {
     session_destroy();
 }
-?>

@@ -35,7 +35,7 @@ class cMedia{
     public $mimeType;
 
     /** @var [int] TPI associé au media */
-    public $tpiID;
+    public $tpiId;
 
 }
 

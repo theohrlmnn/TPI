@@ -36,6 +36,89 @@ function getAllTpi()
     return false;
 }
 
+function getTpiByIDWithCriterion($id)
+{
+    $database = UserDbConnection();
+
+    $query = $database->prepare("SELECT year,userManagerID,tpiStatus,title,cfcDomain,
+    abstract,description,sessionStart,sessionEnd,presentationDate,workplace,
+    evaluationCriterionID,criterionGroup,criterionNumber,criterionDescription
+    FROM tpidbthh.tpis as t
+    LEFT JOIN evaluation_criterions as c
+    ON c.tpiID = t.tpiID
+    WHERE t.tpiID = :tpiID");
+    $query->bindParam(":tpiID", $id, PDO::PARAM_INT);
+
+    if ($query->execute()) {
+        $row = $query->fetchAll(PDO::FETCH_ASSOC);
+        if (count($row) == 0) {
+            return false;
+        }
+        $tpi = new cTpi();
+        $tpi->id = $id;
+        $tpi->year = $row[0]['year'];
+        $tpi->userManagerId = $row[0]['userManagerID'];
+        $tpi->tpiStatus = $row[0]['tpiStatus'];
+        $tpi->title = $row[0]['title'];
+        $tpi->cfcDomain = $row[0]['cfcDomain'];
+        $tpi->abstract = $row[0]['abstract'];
+        $tpi->description = $row[0]['description'];
+        $tpi->sessionStart = $row[0]['sessionStart'];
+        $tpi->sessionEnd = $row[0]['sessionEnd'];
+        $tpi->presentationDate = $row[0]['presentationDate'];
+        $tpi->workplace = $row[0]['workplace'];
+
+        foreach ($row as $r) {
+            if ($r['criterionGroup'] != null) {
+                $criterion = new cEvaluationCriterion();
+                $criterion->id = $r['evaluationCriterionID'];
+                $criterion->criterionGroup = $r['criterionGroup'];
+                $criterion->criterionNumber = $r['criterionNumber'];
+                $criterion->criterionDescription = $r['criterionDescription'];
+
+                array_push($tpi->evaluationCriterions, $criterion);
+            }
+        }
+
+        return $tpi;
+    }
+}
+
+function getTpiByIdAllInfo($id)
+{
+    $database = UserDbConnection();
+
+    $query = $database->prepare("SELECT year,userCandidateID,userManagerID,userExpert1ID,
+    userExpert2ID,title,cfcDomain,abstract,sessionStart,sessionEnd,workplace,description,submissionDate
+    FROM tpidbthh.tpis 
+    WHERE tpiID = :tpiId;");
+    $query->bindParam(":tpiId", $id, PDO::PARAM_INT);
+
+    if ($query->execute()) {
+        $row = $query->fetchAll(PDO::FETCH_ASSOC);
+        if (count($row) == 0) {
+            return false;
+        }
+        $tpi = new cTpi();
+        $tpi->id = $id;
+        $tpi->year = $row[0]['year'];
+        $tpi->userCandidateId = $row[0]['userCandidateID'];
+        $tpi->userManagerId = $row[0]['userManagerID'];
+        $tpi->userExpertId = $row[0]['userExpert1ID'];
+        $tpi->userExpertId2 = $row[0]['userExpert2ID'];
+        $tpi->title = $row[0]['title'];
+        $tpi->cfcDomain = $row[0]['cfcDomain'];
+        $tpi->abstract = $row[0]['abstract'];
+        $tpi->sessionStart = $row[0]['sessionStart'];
+        $tpi->sessionEnd = $row[0]['sessionEnd'];
+        $tpi->workplace = $row[0]['workplace'];
+        $tpi->description = $row[0]['description'];
+        $tpi->submissionDate = $row[0]['submissionDate'];
+        return $tpi;
+    }
+    return null;
+}
+
 function getTpiByID($id)
 {
     $database = UserDbConnection();
@@ -97,7 +180,7 @@ function displayTPIExpert($arrTpi)
         $html .= "<div>";
         $html .= "<div class=\"uk-margin-medium-top uk-card uk-card-default uk-card-body\">";
         $html .= "<form action=\"listTPI.php\" method=\"POST\">";
-        $html .= "<h3 class=\"uk-card-title\">TPI : " . $arrTpi[$i]->title . "</h3>";
+        $html .= "<h3  class=\"uk-card-title\"><a href=\"viewTPI.php?tpiId=" . $arrTpi[$i]->id . "\">TPI : " . $arrTpi[$i]->title . "</a></h3>";
         if ($arrTpi[$i]->tpiStatus == ST_SUBMITTED) {
             $html .= "<button name=\"btnInvalidate\" value=" . $arrTpi[$i]->id . " class=\"uk-margin-top uk-margin-right uk-border-pill uk-position-top-right uk-button uk-button-secondary\">Invalider</button>";
         }
@@ -123,7 +206,7 @@ function displayTPIManager($arrTpi)
         $html .= "<div>";
         $html .= "<div class=\"uk-margin-medium-top uk-card uk-card-default uk-card-body\">";
         $html .= "<form action=\"listTPI.php\" method=\"POST\">";
-        $html .= "<h3 class=\"uk-card-title\">TPI : " . $arrTpi[$i]->title . "</h3>";
+        $html .= "<h3 class=\"uk-card-title\"><a href=\"viewTPI.php?tpiId=" . $arrTpi[$i]->id . "\">TPI : " . $arrTpi[$i]->title . "</a></h3>";
         if ($arrTpi[$i]->tpiStatus == ST_DRAFT) {
             $html .= "<button name=\"btnSubmit\" value=" . $arrTpi[$i]->id . " class=\"uk-margin-top uk-margin-right uk-border-pill uk-position-top-right uk-button uk-button-primary\">Soumettre</button>";
         }
@@ -316,15 +399,115 @@ function modifyTpiByAdmin($tpi)
 
 function modifyTpiByExpert($tpi)
 {
-    $database = UserDbConnection();
-    $query = $database->prepare("UPDATE `tpidbthh`.`tpis` SET presentationDate = :presentationDate
-    WHERE (`tpiID` = :tpiId);");
-    $date = $tpi->presentationDate;
-    $query->bindParam(":presentationDate", $tpi->presentationDate, PDO::PARAM_STR);
-    $query->bindParam(":tpiId", $tpi->id, PDO::PARAM_INT);
+    try {
+        $database = UserDbConnection();
+        $query = $database->prepare("UPDATE `tpidbthh`.`tpis` SET `year` = :year, `title` = :title, 
+        `cfcDomain` = :cfcDomain, `abstract` = :abstract, `sessionStart` = :sessionStart, 
+        `sessionEnd` = :sessionEnd, `presentationDate` = :presentationDate, `workplace` = :workplace, 
+        `description` = :description
+        WHERE (`tpiID` = :tpiID);");
+
+        $query->bindParam(":year", $tpi->year, PDO::PARAM_STR);
+        $query->bindParam(":title", $tpi->title, PDO::PARAM_STR);
+        $query->bindParam(":cfcDomain", $tpi->cfcDomain, PDO::PARAM_STR);
+        $query->bindParam(":abstract", $tpi->abstract, PDO::PARAM_STR);
+        $query->bindParam(":sessionStart", $tpi->sessionStart, PDO::PARAM_STR);
+        $query->bindParam(":sessionEnd", $tpi->sessionEnd, PDO::PARAM_STR);
+        $query->bindParam(":presentationDate", $tpi->presentationDate, PDO::PARAM_STR);
+        $query->bindParam(":workplace", $tpi->workplace, PDO::PARAM_STR);
+        $query->bindParam(":description", $tpi->description, PDO::PARAM_STR);
+        $query->bindParam(":tpiID", $tpi->id, PDO::PARAM_INT);
+        $criterions = getCriterionWithTpiId($tpi->id);
+
+        foreach ($tpi->evaluationCriterions as $cUpdate) {
+            if ($cUpdate->id == -1) {
+                createCriterion($cUpdate, $tpi->id);
+            } else {
+                foreach ($criterions as $c) {
+                    if ($c->id == $cUpdate->id) {
+                        updateCriterion($cUpdate);
+                    }
+                }
+            }
+        }
+
+    } catch (Exception $e) {
+        return false;
+    }
 
     if ($query->execute()) {
         return true;
+    } else {
+        return false;
+    }
+}
+
+function updateCriterion($cUpdate)
+{
+    $database = UserDbConnection();
+    $query = $database->prepare("UPDATE `tpidbthh`.`evaluation_criterions` 
+    SET `criterionGroup` = :criterionGroup, `criterionNumber` = :criterionNumber, `criterionDescription` = :criterionDescription 
+    WHERE (`evaluationCriterionID` = :evaluationCriterionID);");
+
+    $query->bindParam(":criterionGroup", $cUpdate->criterionGroup, PDO::PARAM_STR);
+    $query->bindParam(":criterionNumber", $cUpdate->criterionNumber, PDO::PARAM_STR);
+    $query->bindParam(":criterionDescription", $cUpdate->criterionDescription, PDO::PARAM_STR);
+    $query->bindParam(":evaluationCriterionID", $cUpdate->id, PDO::PARAM_STR);
+
+    if ($query->execute()) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function createCriterion($cUpdate, $tpiId)
+{
+    $database = UserDbConnection();
+    $query = $database->prepare("INSERT INTO `tpidbthh`.`evaluation_criterions` 
+    (`criterionGroup`, `criterionNumber`, `criterionDescription`, `tpiID`) 
+    VALUES (:criterionGroup, :criterionNumber, :criterionDescription, :tpiID);");
+
+    $query->bindParam(":criterionGroup", $cUpdate->criterionGroup, PDO::PARAM_STR);
+    $query->bindParam(":criterionNumber", $cUpdate->criterionNumber, PDO::PARAM_STR);
+    $query->bindParam(":criterionDescription", $cUpdate->criterionDescription, PDO::PARAM_STR);
+    $query->bindParam(":tpiID", $tpiId, PDO::PARAM_STR);
+
+    if ($query->execute()) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function getCriterionWithTpiId($id)
+{
+    $database = UserDbConnection();
+    $query = $database->prepare("SELECT evaluationCriterionID, criterionGroup, criterionNumber, criterionDescription
+     FROM `tpidbthh`.`evaluation_criterions` 
+     WHERE (`tpiID` = :tpiID);");
+    $query->bindParam(":tpiID", $id, PDO::PARAM_INT);
+
+    if ($query->execute()) {
+        $row = $query->fetchAll(PDO::FETCH_ASSOC);
+        if (count($row) == 0) {
+            return false;
+        }
+
+        $arrEvaluationCriterions = array();
+
+        foreach ($row as $r) {
+            if ($r['criterionGroup'] != null) {
+                $criterion = new cEvaluationCriterion();
+                $criterion->id = $r['evaluationCriterionID'];
+                $criterion->criterionGroup = $r['criterionGroup'];
+                $criterion->criterionNumber = $r['criterionNumber'];
+                $criterion->criterionDescription = $r['criterionDescription'];
+
+                array_push($arrEvaluationCriterions, $criterion);
+            }
+        }
+        return $arrEvaluationCriterions;
     } else {
         return false;
     }
@@ -347,20 +530,22 @@ function invalidateTpi($tpi)
 function submitTpi($tpi)
 {
     $dateSubmission = date("Y-m-d H:i:s");
-    $pdfPath = createPdf($tpi);
-    $database = UserDbConnection();
-    $query = $database->prepare("UPDATE `tpidbthh`.`tpis` SET `tpiStatus` = :tpiStatus, `pdfPath` = :pdfPath, `submissionDate` = :submissionDate WHERE (`tpiID` = :tpiID);");
-    $query->bindValue(":tpiStatus", ST_SUBMITTED, PDO::PARAM_STR);
-    $query->bindValue(":pdfPath", $pdfPath, PDO::PARAM_STR);
-    $query->bindValue(":submissionDate", $dateSubmission, PDO::PARAM_STR);
-    $query->bindParam(":tpiID", $tpi->id, PDO::PARAM_STR);
-    if ($query->execute()) {
-        return true;
-    } else {
-        return false;
+    $pdfPath = createPdf($tpi, $dateSubmission);
+    if ($pdfPath) {
+        $database = UserDbConnection();
+        $query = $database->prepare("UPDATE `tpidbthh`.`tpis` SET `tpiStatus` = :tpiStatus, `pdfPath` = :pdfPath, `submissionDate` = :submissionDate WHERE (`tpiID` = :tpiID);");
+        $query->bindValue(":tpiStatus", ST_SUBMITTED, PDO::PARAM_STR);
+        $query->bindValue(":pdfPath", $pdfPath, PDO::PARAM_STR);
+        $query->bindValue(":submissionDate", $dateSubmission, PDO::PARAM_STR);
+        $query->bindParam(":tpiID", $tpi->id, PDO::PARAM_STR);
+        if ($query->execute()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
-
+//a voir
 function deletePdf($tpi)
 {
     try {
@@ -371,13 +556,20 @@ function deletePdf($tpi)
     }
 }
 
-function createPdf($tpi)
+//TO DO try catch return false
+function createPdf($tpi, $dateSubmission)
 {
     $user = getUserById($tpi->userCandidateId);
+    $tpi = getTpiByIdAllInfo($tpi->id);
+    $dateTtpi = getTimeAndDateToTpi($tpi);
     //"/var/www/html/TPI/php/modelspdf/Enonce_TPI_2020_76_Cart_Thibault.pdf"
     $html2pdf = new Html2Pdf();
+    ob_start();
+    require("php/includes/print_enonce.php");
+    $var = ob_get_clean();
+    $html2pdf->writeHTML($var);
     $html2pdf->writeHTML($tpi->description);
-    $path = PATH_CREATEPDF . "Enonce_TPI_".$tpi->year."_".$tpi->id."_".$user->lastName."_".$user->firstName.".pdf";
+    $path = PATH_CREATEPDF . "Enonce_TPI_" . $tpi->year . "_" . $tpi->id . "_" . $user->lastName . "_" . $user->firstName . ".pdf";
     $html2pdf->output($path, 'F');
 }
 
@@ -430,7 +622,7 @@ function getTpiByIdWithMedia($id)
 function deleteTpi($tpi)
 {
     try {
-        deleteEvaluationCriterions($tpi);
+        //deleteEvaluationCriterions($tpi);
         deleteAllMediaByTpiId($tpi);
         $database = UserDbConnection();
         $database->beginTransaction();
@@ -445,6 +637,22 @@ function deleteTpi($tpi)
     }
 }
 
+function addEvaluationCriterions($tpi)
+{
+    $database = UserDbConnection();
+    $query = $database->prepare("INSERT INTO `tpidbthh`.`evaluation_criterions` (`criterionGroup`, `criterionNumber`, `criterionDescription`, `tpiID`) 
+    VALUES (:criterionGroup, :criterionNumber, :criterionDescription, :tpiID);");
+    foreach ($tpi->evaluationCriterions as $ec) {
+        $query->bindParam(":criterionGroup", $ec->criterionGroup, PDO::PARAM_STR);
+        $query->bindParam(":criterionNumber", $ec->criterionNumber, PDO::PARAM_STR);
+        $query->bindParam(":criterionDescription", $ec->criterionDescription, PDO::PARAM_STR);
+        $query->bindParam(":tpiID", $tpi->id, PDO::PARAM_INT);
+        if (!$query->execute()) {
+            return false;
+        }
+    }
+    return true;
+}
 
 function deleteEvaluationCriterions($tpi)
 {
@@ -479,7 +687,27 @@ function tpiExistIn($tpi, $nameTable)
 
 function getTimeAndDateToTpi($tpi)
 {
-    return explode(' ', $tpi->presentationDate);
+    $sessionStart = explode(" ", $tpi->sessionStart);
+    $sessionEnd = explode(" ", $tpi->sessionEnd);
+    $presentation = explode(" ", $tpi->presentationDate);
+
+    if ($presentation[0] == "") {
+        $presentation[] = "";
+    }
+
+    if ($sessionStart[0] == "") {
+        $sessionStart[] = "";
+    }
+
+    if ($sessionEnd[0] == "") {
+        $sessionEnd[] = "";
+    }
+    $dateAndTimeTpi = array(
+        "start"  => array("date" => $sessionStart[0], "time" => $sessionStart[1]),
+        "end" => array("date" => $sessionEnd[0], "time" => $sessionEnd[1]),
+        "presentation"   => array("date" => $presentation[0], "time" => $presentation[1])
+    );
+    return $dateAndTimeTpi;
 }
 
 function displayFormForAdminWithDisplayMessage($tpi, $arrUserManager, $arrUserExpert, $arrUserCandidat, $problem)
@@ -554,14 +782,14 @@ function displayFormForExpertWithDisplayMessage($tpi)
         $html .=  "<div class=\"uk-inline uk-width-1-1\">";
         $html .=  "<label class=\"uk-form-label\" for=\"form-horizontal-text\">Date de la présentation du TPI :</label>";
         $html .=  "<span class=\"uk-form-icon uk-form-icon-flip\"></span>";
-        $html .=  "<input name=\"tbxDatePresentation\" value=" . $arrDateTime[0] . " class=\"uk-input uk-border-pill\" placeholder=\"Résumé\" type=\"date\">";
+        $html .=  "<input name=\"tbxDatePresentation\" value=" . $arrDateTime[0] . " class=\"uk-input uk-border-pill\" type=\"date\">";
         $html .=  "</div>";
         $html .=  "</div>";
         $html .=  "<div class=\"uk-margin-small\">";
         $html .=  "<div class=\"uk-inline uk-width-1-1\">";
         $html .=  "<label class=\"uk-form-label\" for=\"form-horizontal-text\">Heure de la présentation du TPI :</label>";
         $html .=  "<span class=\"uk-form-icon uk-form-icon-flip\"></span>";
-        $html .=  "<input name=\"tbxTimePresentation\" value=" . $arrDateTime[1] . " class=\"uk-input uk-border-pill\" placeholder=\"Résumé\" type=\"time\">";
+        $html .=  "<input name=\"tbxTimePresentation\" value=" . $arrDateTime[1] . " class=\"uk-input uk-border-pill\" type=\"time\">";
         $html .=  "</div>";
         $html .=  "</div>";
     } else {
@@ -569,14 +797,14 @@ function displayFormForExpertWithDisplayMessage($tpi)
         $html .=  "<div class=\"uk-inline uk-width-1-1\">";
         $html .=  "<label class=\"uk-form-label\" for=\"form-horizontal-text\">Date de la présentation du TPI :</label>";
         $html .=  "<span class=\"uk-form-icon uk-form-icon-flip\"></span>";
-        $html .=  "<input name=\"tbxDatePresentation\" class=\"uk-input uk-border-pill\" placeholder=\"Résumé\" type=\"date\">";
+        $html .=  "<input name=\"tbxDatePresentation\" class=\"uk-input uk-border-pill\" type=\"date\">";
         $html .=  "</div>";
         $html .=  "</div>";
         $html .=  "<div class=\"uk-margin-small\">";
         $html .=  "<div class=\"uk-inline uk-width-1-1\">";
         $html .=  "<label class=\"uk-form-label\" for=\"form-horizontal-text\">Date de la présentation du TPI :</label>";
         $html .=  "<span class=\"uk-form-icon uk-form-icon-flip\"></span>";
-        $html .=  "<input name=\"tbxTimePresentation\" class=\"uk-input uk-border-pill\" placeholder=\"Résumé\" type=\"time\">";
+        $html .=  "<input name=\"tbxTimePresentation\" class=\"uk-input uk-border-pill\" type=\"time\">";
         $html .=  "</div>";
         $html .=  "</div>";
     }
@@ -593,80 +821,88 @@ function displayFormForExpertWithDisplayMessage($tpi)
 
 function displayFormForManagerWithDisplayMessage($tpi)
 {
+}
 
-    $arrDateTime = getTimeAndDateToTpi($tpi);
+function buttonChangeRoleListTpi($arrRole, $role)
+{
+    if (count($arrRole) > 1) {
+        $html = "<div class=\"uk-margin-left uk-margin-top\">";
+        $html .= "<div class=\"uk-margin uk-grid-small uk-child-width-auto uk-grid\">";
+        foreach ($arrRole as $r) {
+            if ($r == RL_ADMINISTRATOR) {
+                if ($role == $r) {
+                    $html .= "<label><input class=\"uk-radio\" type=\"radio\" value=" . RL_ADMINISTRATOR . " name=\"radioRole\" onchange=\"changeRole(" . RL_ADMINISTRATOR . ")\" checked> Liste TPI en tant que Administrateur</label>";
+                } else {
+                    $html .= "<label><input class=\"uk-radio\" type=\"radio\" value=" . RL_ADMINISTRATOR . " name=\"radioRole\" onchange=\"changeRole(" . RL_ADMINISTRATOR . ")\"> Liste TPI en tant que Administrateur</label>";
+                }
+            }
+            if ($r == RL_EXPERT) {
+                if ($role == $r) {
+                    $html .= "<label><input class=\"uk-radio\" type=\"radio\" value=" . RL_EXPERT . " name=\"radioRole\" onchange=\"changeRole(" . RL_EXPERT . ")\" checked > Liste TPI en tant que Expert</label>";
+                } else {
+                    $html .= "<label><input class=\"uk-radio\" type=\"radio\" value=" . RL_EXPERT . " name=\"radioRole\" onchange=\"changeRole(" . RL_EXPERT . ")\" > Liste TPI en tant que Expert</label>";
+                }
+            }
+            if ($r == RL_MANAGER) {
+                if ($role == $r) {
+                    $html .= "<label><input class=\"uk-radio\" type=\"radio\" value=" . RL_MANAGER . " name=\"radioRole\" onchange=\"changeRole(" . RL_MANAGER . ")\" checked> Liste TPI en tant que Chef de Projet</label>";
+                } else {
+                    $html .= "<label><input class=\"uk-radio\" type=\"radio\" value=" . RL_MANAGER . " name=\"radioRole\" onchange=\"changeRole(" . RL_MANAGER . ")\" > Liste TPI en tant que Chef de Projet</label>";
+                }
+            }
+        }
+        $html .= "</div>";
+        $html .= "</div>";
 
-    $html = "<form class=\"toggle-class uk-flex uk-flex-center uk-background-muted uk-height-viewport\" action=\"modifyTPI.php\" method=\"POST\">";
+        return $html;
+    }
+}
 
-    $html .= "<fieldset class=\"uk-fieldset uk-margin-medium-top\">";
-           
-    $html .= displayMessage();
-           
-    $html .= "<div class=\"uk-margin-small\">";
-    $html .= "<label class=\"uk-form-label\" for=\"form-horizontal-text\">Titre</label>";
-    $html .= "<div class=\"uk-inline uk-width-1-1\">";
-    $html .= "<span class=\"uk-form-icon uk-form-icon-flip\" data-uk-icon=\"icon: calendar\"></span>";
-    $html .= "<input name=\"tbxTitle\" class=\"uk-input uk-border-pill\" placeholder=\"Outil de collaboration pour le collège d’experts, modules Répartition et ...\" type=\"text\">";               
-    $html .= "</div>";
-    $html .= "</div>";
+function getTpiByCandidateId($id)
+{
+    $database = UserDbConnection();
 
-    $html .= "<div class=\"uk-margin-small\">";
-    $html .= "<label class=\"uk-form-label\" for=\"form-horizontal-text\">Domaine CFC</label>";
-    $html .= "<div class=\"uk-inline uk-width-1-1\">";
-    $html .= "<span class=\"uk-form-icon uk-form-icon-flip\" data-uk-icon=\"icon: info\"></span>";
-    $html .= "<input name=\"tbxDomainCFC\" class=\"uk-input uk-border-pill\" placeholder=\"Développement d'applications\" type=\"text\">";
-    $html .= "</div>";
-    $html .= "</div>";
-            
-    $html .= "<div class=\"uk-margin-small\">";
-    $html .= "<label class=\"uk-form-label\" for=\"form-horizontal-text\">Résumé</label>";
-    $html .= "<div class=\"uk-inline uk-width-1-1\">";
-    $html .= "<span class=\"uk-form-icon uk-form-icon-flip\" data-uk-icon=\"icon: comment\"></span>";
-    $html .= "<input name=\"tbxAbstract\" class=\"uk-input uk-border-pill\" placeholder=\"Le but principal de cette application est de donner aux membres du collège ...\" type=\"text\">";
-    $html .= "</div>";
-    $html .= "</div>";
+    $query = $database->prepare("SELECT sessionStart, tpiStatus,pdfPath FROM tpidbthh.tpis WHERE userCandidateID = :userCandidateID;");
+    $query->bindParam(":userCandidateID", $id, PDO::PARAM_INT);
 
-    $html .= "<div class=\"uk-margin-small\">";
-    $html .= "<label class=\"uk-form-label\" for=\"form-horizontal-text\">Lieu de travail</label>";
-    $html .= "<div class=\"uk-inline uk-width-1-1\">";
-    $html .= "<span class=\"uk-form-icon uk-form-icon-flip\" data-uk-icon=\"icon: home\"></span>";
-    $html .= "<input name=\"tbxWorkPlace\" class=\"uk-input uk-border-pill\" placeholder=\"A domicile\" type=\"text\">";
-    $html .= "</div>";
-    $html .= "</div>";
+    if ($query->execute()) {
+        $row = $query->fetchAll(PDO::FETCH_ASSOC);
+        if (count($row) == 0) {
+            return false;
+        }
+        $tpi = new cTpi();
+        $tpi->tpiStatus = $row[0]['tpiStatus'];
+        $tpi->sessionStart = $row[0]['sessionStart'];
+        $tpi->pdfPath = $row[0]['pdfPath'];
+        return $tpi;
+    }
+}
 
-    $html .= "<div class=\"uk-margin-bottom\">";
-    $html .= "<button name=\"btnCreate\" value=\"Send\" type=\"submit\" class=\"uk-button uk-button-primary uk-border-pill uk-width-1-1\">Modifer TPI</button>";
-    $html .= "</div>";
+function formatDateAndTime($date, $time)
+{
 
-    $html .= "</fieldset>";
-    $html .= "<fieldset class=\"uk-fieldset uk-flex-left uk-margin-medium-left uk-margin-medium-top\">";
-    $html .= "<div class=\"uk-margin-small\">";
-    $html .= "<div class=\"uk-inline uk-width-1-1\">";
-    $html .= "<label class=\"uk-form-label\" for=\"form-horizontal-text\">Date du début de la session :</label>";
-    $html .= "<span class=\"uk-form-icon uk-form-icon-flip\"></span>";
-    $html .= "<input name=\"tbxDateStartSession\" class=\"uk-input uk-border-pill\" type=\"date\">";
-    $html .= "</div>";
-    $html .= "</div>";
+    if ($time == null) {
+        $time = "000000";
+    }
 
-    $html .= "<div class=\"uk-margin-small\">";
-    $html .= "<div class=\"uk-inline uk-width-1-1\">";
-    $html .= "<label class=\"uk-form-label\" for=\"form-horizontal-text\">Date de la fin de la session :</label>";            
-    $html .= "<span class=\"uk-form-icon uk-form-icon-flip\"></span>";
-    $html .= "<input name=\"tbxDateEndSession\" class=\"uk-input uk-border-pill\" type=\"date\">";
-    $html .= "</div>";
-    $html .= "</div>";
+    if ($date == null) {
+        return null;
+    }
+    $date = $date . " " . $time;
 
-    $html .= "<div class=\"uk-margin-small\">";
-    $html .= "<div class=\"uk-inline uk-width-1-1\">";
-    $html .= "<label class=\"uk-form-label\" for=\"form-horizontal-text\">Date de la présentation du TPI :</label>";
-    $html .= "<span class=\"uk-form-icon uk-form-icon-flip\"></span>";
-    $html .= "<input name=\"tbxDatePresentation\" class=\"uk-input uk-border-pill\" type=\"date\">";
-    $html .= "</div>";
-    $html .= "</div>";
+    for ($i = 0; $i < strlen($date); $i++) {
+        if ($i == 13) {
+            $y = $i + 1;
+            $c12 = $date[$y];
+            $y++;
+            $date[$i] = ":";
+            $date[$y] = $c12;
+        }
+        if ($i == 16) {
+            $date[$i] = ":";
+            $date .= $time[4] . $time[5];
+        }
+    }
 
-    $html .= "</fieldset>";
-
-    //$html .= "</form>";
-
-    return $html;
+    return $date;
 }

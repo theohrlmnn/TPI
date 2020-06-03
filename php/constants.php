@@ -24,13 +24,13 @@ define ('AL_SUCESS', 'sucess');
 define ('AL_WARNING', 'warning');
 define ('AL_DANGER', 'danger');
 
-// Les différents etat d'un TPI
+// Les différents status d'un TPI
 define ('ST_DRAFT','draft');
 define ('ST_SUBMITTED','submitted');
 define ('ST_VALID','valid');
 
 //Les différents chemin utiles
 define ('PATH_PDF','pdf/');
-define ('PATH_MEDID','medias/');
+define ('PATH_MEDIA','medias/');
 define ('PATH_CREATEPDF','/var/www/html/TPI/pdf/')
 ?>
