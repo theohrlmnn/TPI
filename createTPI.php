@@ -8,6 +8,17 @@
 */
 require_once("php/inc.all.php");
 
+if (!islogged() || min(getRoleUserSession()) != RL_ADMINISTRATOR) {
+
+    $messages = array(
+        array("message" => "Vous ne pouvez pas accéder à cette page.", "type" => AL_DANGER)
+    );
+    setMessage($messages);
+    setDisplayMessage(true);
+
+    header('Location: home.php');
+    exit;
+}
 
 $ok = true;
 
