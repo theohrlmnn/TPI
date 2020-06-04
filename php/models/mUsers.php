@@ -28,7 +28,6 @@ function signIn($u, $pswd)
 
         if (count($row) != 0) {
 
-
             $u->id = $row[0]["userID"];
             $u->lastName = $row[0]["lastName"];
             $u->firstName = $row[0]["firstName"];
@@ -36,18 +35,35 @@ function signIn($u, $pswd)
             $u->address = $row[0]["address"];
             $u->phone = $row[0]["phone"];
 
-            $query = $database->prepare("SELECT * FROM tpidbthh.user_roles WHERE userID = :id;");
+            /*$query = $database->prepare("SELECT * FROM tpidbthh.user_roles WHERE userID = :id;");
+            $query->bindParam(":id", $u->id, PDO::PARAM_STR);*/
+            $query = $database->prepare("SELECT * FROM tpidbthh.user_rights WHERE userID = :id;");
             $query->bindParam(":id", $u->id, PDO::PARAM_STR);
 
             if ($query->execute()) {
                 $row = $query->fetchAll(PDO::FETCH_ASSOC);
-                $arrRole = array();
+                /*$arrRole = array();
                 for ($i = 0; $i < count($row); $i++) {
                     $role = $row[$i]["roleID"];
                     array_push($arrRole, $role);
                 }
+                $u->role = $arrRole;*/
 
-                $u->role = $arrRole;
+                foreach ($row as $r) {
+                    $right = $r["rightName"];
+                    array_push($u->right, $right);
+                }
+                $query = $database->prepare("SELECT * FROM tpidbthh.user_roles WHERE userID = :id;");
+                $query->bindParam(":id", $u->id, PDO::PARAM_STR);
+                if ($query->execute()) {
+                    $row = $query->fetchAll(PDO::FETCH_ASSOC);
+                    
+                    for ($i = 0; $i < count($row); $i++) {
+                        $role = $row[$i]["roleID"];
+                        array_push($u->role, $role);
+                    }
+                    
+                }
 
                 setSessionUser($u);
                 return true;
@@ -85,7 +101,7 @@ function getNameUserByIdByArray($id, $arrUser)
 {
     foreach ($arrUser as $user) {
         if ($user->id == $id) {
-            return $user->firstName. " " . $user->lastName; 
+            return $user->firstName . " " . $user->lastName;
         }
     }
 
@@ -102,11 +118,11 @@ function getUserById($id)
 
     if ($query->execute()) {
         $row = $query->fetchAll(PDO::FETCH_ASSOC);
-        
+
         $u = new cUser();
         $u->lastName = $row[0]["lastName"];
         $u->firstName = $row[0]["firstName"];
-        
+
         return $u;
     }
     return false;

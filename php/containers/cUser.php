@@ -15,7 +15,7 @@ class cUser{
      /**
      * @brief   Class Constructor avec paramètres par défaut pour construire l'objet
      */
-    public function __construct($InUserId = -1,$InlastName = "", $InfirstName = "", $InCompagnyName = "", $InAddress = "", $InEmail = "", $InPhone = "",$InRole = "Nobody"){
+    public function __construct($InUserId = -1,$InlastName = "", $InfirstName = "", $InCompagnyName = "", $InAddress = "", $InEmail = "", $InPhone = "",$InRole = array(),$InRight = array()){
         $this->id = $InUserId;
         $this->lastName = $InlastName;
         $this->firstName = $InfirstName;
@@ -24,23 +24,25 @@ class cUser{
         $this->email = $InEmail;
         $this->phone = $InPhone;
         $this->role = $InRole;
+        $this->right = $InRight;
     }
+    
     /** @var [int] Id unique de l'utilisateur */
     public $id;
 
     /** @var [string] Nom famille de l'utilisateur */
     public $lastName;
 
-    /** @var [int] Prénom de l'utilisateur */
+    /** @var [string] Prénom de l'utilisateur */
     public $firstName;
 
-    /** @var [int] Entreprise de l'utilisateur */
+    /** @var [string] Entreprise de l'utilisateur */
     public $compagnyName;
 
-    /** @var [int] Adresse de l'utilisateur */
+    /** @var [string] Adresse de l'utilisateur */
     public $adress;
 
-    /** @var [int] Email de l'utilisateur */
+    /** @var [string] Email de l'utilisateur */
     public $email;
 
     /** @var [string] Numéro de téléphonne de l'utilisateur */
@@ -48,6 +50,9 @@ class cUser{
 
     /** @var [string] Tableau du role de l'utilisateur */
     public $role;
+
+    /** @var [string] Tableau de droit de l'utilisateur */
+    public $right;
 }
 
 ?>

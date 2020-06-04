@@ -28,6 +28,8 @@ $btnDelete = filter_input(INPUT_POST, "btnDelete", FILTER_SANITIZE_NUMBER_INT);
 $btnInvalidate = filter_input(INPUT_POST, "btnInvalidate", FILTER_SANITIZE_NUMBER_INT);
 
 $radioRole = filter_input(INPUT_GET,'radioRole',FILTER_SANITIZE_STRING);
+$radioRoleBtn = filter_input(INPUT_POST,'radioRole',FILTER_SANITIZE_STRING);
+
 
 if (count($arrRoles) > 1) {
     if ($radioRole != null) {
@@ -35,6 +37,11 @@ if (count($arrRoles) > 1) {
     }
 }
 
+if (count($arrRoles) > 1) {
+    if ($radioRoleBtn != null) {
+        $role = $radioRoleBtn;
+    }
+}
 
 switch ($role) {
     case RL_ADMINISTRATOR:
@@ -107,11 +114,12 @@ switch ($role) {
                 setDisplayMessage(true);
             }
         }
-        $displayTPI = displayTPIAdmin($arrTpi);
+        $displayTPI = displayTPIAdmin($arrTpi, $arrRoles, $role);
         break;
     case RL_EXPERT:
         $arrTpi = getAllTpiByIdUserExpertSession();
         $idUser = getIdUserSession();
+        $tpi = getTpiByIdInArray($btnInvalidate, $arrTpi);
 
         if ($btnModify) {
             $tpi = getTpiByIdInArray($btnModify, $arrTpi);
@@ -122,7 +130,7 @@ switch ($role) {
         }
 
         if ($btnInvalidate) {
-            $tpi = getTpiByIdInArray($btnInvalidate, $arrTpi);
+            
 
             if (
                 $tpi->tpiStatus == ST_SUBMITTED && $tpi->userExpertId == $idUser ||
@@ -156,12 +164,12 @@ switch ($role) {
             }
         }
 
-        $displayTPI = displayTPIExpert($arrTpi);
+        $displayTPI = displayTPIExpert($arrTpi, $arrRoles, $role);
         break;
     case RL_MANAGER:
         $btnSubmit = filter_input(INPUT_POST, "btnSubmit", FILTER_SANITIZE_NUMBER_INT);
         $arrTpi = getAllTpiByIdUserManagerSession();
-        $idUser = getIdUserSession();
+-        $idUser = getIdUserSession();
 
         if ($btnModify) {
             $tpi = getTpiByIdInArray($btnModify, $arrTpi);
@@ -203,7 +211,7 @@ switch ($role) {
             }
         }
 
-        $displayTPI = displayTPIManager($arrTpi);
+        $displayTPI = displayTPIManager($arrTpi, $arrRoles, $role);
         break;
     default:
         $messages = array(
@@ -216,9 +224,6 @@ switch ($role) {
         exit;
         break;
 }
-
-
-
 
 
 ?>
@@ -237,13 +242,10 @@ switch ($role) {
 <body>
     <?php include_once("php/includes/nav.php");
     echo displayMessage();
-    echo buttonChangeRoleListTpi($arrRoles, $role);
+    
     echo $displayTPI;
     ?>
-    
-    <?php
-    
-    ?>
+
     <!-- JS FILES -->
     <script src="js/uikit.js"></script>
     <script src="js/uikit-icons.js"></script>

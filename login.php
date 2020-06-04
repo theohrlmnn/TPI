@@ -24,20 +24,28 @@ if ($btnLogin) {
 	$email = filter_input(INPUT_POST, "tbxEmail", FILTER_SANITIZE_STRING);
 	$pswd = filter_input(INPUT_POST, "tbxPswd", FILTER_SANITIZE_STRING);
 
-	$u = new cUser();
-	$u->email = $email;
 
-	if (signin($u, $pswd)) {
+
+	if ($email != "" && $pswd != "") {
+		$u = new cUser();
+		$u->email = $email;
+		if (signin($u, $pswd)) {
+			$messages = array(
+				array("message" => "Bienvenu " . getFirstNameUserSession(), "type" => AL_SUCESS)
+			);
+			setMessage($messages);
+			setDisplayMessage(true);
+			header('Location: home.php');
+			exit;
+		} else {
+			$messages = array(
+				array("message" => "Problème de connexion.", "type" => AL_DANGER)
+			);
+			setMessage($messages);
+			setDisplayMessage(true);
+		}
 		$messages = array(
-			array("message" => "Bienvenu " . getFirstNameUserSession(), "type" => AL_SUCESS)
-		);
-		setMessage($messages);
-		setDisplayMessage(true);
-		header('Location: home.php');
-		exit;
-	} else {
-		$messages = array(
-			array("message" => "Problème de connexion", "type" => AL_DANGER)
+			array("message" => "Veuillez remplir les champs.", "type" => AL_DANGER)
 		);
 		setMessage($messages);
 		setDisplayMessage(true);
