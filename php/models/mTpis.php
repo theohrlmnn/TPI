@@ -142,15 +142,16 @@ function getTpiByID($id)
     }
 }
 
-function displayTPIAdmin($arrTpi)
+function displayTPIAdmin($arrTpi, $arrRoles, $role)
 {
-    $html = "<div class=\"uk-container uk-container-expand\">";
+    $html = "<form action=\"listTPI.php\" method=\"POST\">";
+    $html .= buttonChangeRoleListTpi($arrRoles, $role);
+    $html .= "<div class=\"uk-container uk-container-expand\">";
     $html .= "<div class=\"uk-child-width-1-1@m uk-card-small \"uk-grid uk-scrollspy=\"cls: uk-animation-fade; target: .uk-card; delay: 10; repeat: false\">";
-
+    
     for ($i = 0; $i < count($arrTpi); $i++) {
         $html .= "<div>";
         $html .= "<div class=\"uk-margin-medium-top uk-card uk-card-default uk-card-body\">";
-        $html .= "<form action=\"listTPI.php\" method=\"POST\">";
         $html .= "<h3 class=\"uk-card-title\">TPI : " . $arrTpi[$i]->title . "</h3>";
         if ($arrTpi[$i]->tpiStatus == ST_DRAFT) {
             $html .= "<button name=\"btnDelete\" value=" . $arrTpi[$i]->id . " class=\"uk-margin-top uk-margin-right uk-border-pill uk-position-top-right uk-button uk-button-danger\">Supprimer</button>";
@@ -171,15 +172,17 @@ function displayTPIAdmin($arrTpi)
     return $html;
 }
 
-function displayTPIExpert($arrTpi)
+function displayTPIExpert($arrTpi, $arrRoles, $role)
 {
-    $html = "<div class=\"uk-container uk-container-expand\">";
+    $html = "<form action=\"listTPI.php\" method=\"POST\">";
+    $html .= buttonChangeRoleListTpi($arrRoles, $role);
+    $html .= "<div class=\"uk-container uk-container-expand\">";
     $html .= "<div class=\"uk-child-width-1-1@m uk-card-small \"uk-grid uk-scrollspy=\"cls: uk-animation-fade; target: .uk-card; delay: 10; repeat: false\">";
 
     for ($i = 0; $i < count($arrTpi); $i++) {
         $html .= "<div>";
         $html .= "<div class=\"uk-margin-medium-top uk-card uk-card-default uk-card-body\">";
-        $html .= "<form action=\"listTPI.php\" method=\"POST\">";
+        
         $html .= "<h3  class=\"uk-card-title\"><a href=\"viewTPI.php?tpiId=" . $arrTpi[$i]->id . "\">TPI : " . $arrTpi[$i]->title . "</a></h3>";
         if ($arrTpi[$i]->tpiStatus == ST_SUBMITTED) {
             $html .= "<button name=\"btnInvalidate\" value=" . $arrTpi[$i]->id . " class=\"uk-margin-top uk-margin-right uk-border-pill uk-position-top-right uk-button uk-button-secondary\">Invalider</button>";
@@ -197,15 +200,17 @@ function displayTPIExpert($arrTpi)
     return $html;
 }
 
-function displayTPIManager($arrTpi)
+function displayTPIManager($arrTpi, $arrRoles, $role)
 {
-    $html = "<div class=\"uk-container uk-container-expand\">";
+    $html = "<form action=\"listTPI.php\" method=\"POST\">";
+    $html .= buttonChangeRoleListTpi($arrRoles, $role);
+    $html .= "<div class=\"uk-container uk-container-expand\">";
     $html .= "<div class=\"uk-child-width-1-1@m uk-card-small \"uk-grid uk-scrollspy=\"cls: uk-animation-fade; target: .uk-card; delay: 10; repeat: false\">";
 
     for ($i = 0; $i < count($arrTpi); $i++) {
         $html .= "<div>";
         $html .= "<div class=\"uk-margin-medium-top uk-card uk-card-default uk-card-body\">";
-        $html .= "<form action=\"listTPI.php\" method=\"POST\">";
+        
         $html .= "<h3 class=\"uk-card-title\"><a href=\"viewTPI.php?tpiId=" . $arrTpi[$i]->id . "\">TPI : " . $arrTpi[$i]->title . "</a></h3>";
         if ($arrTpi[$i]->tpiStatus == ST_DRAFT) {
             $html .= "<button name=\"btnSubmit\" value=" . $arrTpi[$i]->id . " class=\"uk-margin-top uk-margin-right uk-border-pill uk-position-top-right uk-button uk-button-primary\">Soumettre</button>";
@@ -253,8 +258,8 @@ function createTpi($tpi)
 {
     $database = UserDbConnection();
     $query = $database->prepare("INSERT INTO `tpidbthh`.`tpis` (`year`, `userCandidateID`, `userManagerID`, `userExpert1ID`, `userExpert2ID`, `title`, `cfcDomain`, `abstract`,
-     `sessionStart`, `sessionEnd`, `presentationDate`, `workplace`, `submissionDate`) 
-    VALUES (:year, :userCandidateID, :userManagerID, :userExpert1ID, :userExpert2ID, :title, :cfcDomain, :abstract, :sessionStart, :sessionEnd, :presentationDate, :workplace, :submissionDate);");
+     `sessionStart`, `sessionEnd`, `presentationDate`, `workplace`) 
+    VALUES (:year, :userCandidateID, :userManagerID, :userExpert1ID, :userExpert2ID, :title, :cfcDomain, :abstract, :sessionStart, :sessionEnd, :presentationDate, :workplace);");
     $query->bindParam(":year", $tpi->year, PDO::PARAM_INT);
     $query->bindParam(":userCandidateID", $tpi->userCandidateId, PDO::PARAM_INT);
     $query->bindParam(":userManagerID", $tpi->userManagerId, PDO::PARAM_INT);
@@ -267,7 +272,6 @@ function createTpi($tpi)
     $query->bindParam(":sessionEnd", $tpi->sessionEnd, PDO::PARAM_STR);
     $query->bindParam(":presentationDate", $tpi->presentationDate, PDO::PARAM_STR);
     $query->bindParam(":workplace", $tpi->workplace, PDO::PARAM_STR);
-    $query->bindParam(":submissionDate", $tpi->submissionDate, PDO::PARAM_STR);
 
     if ($query->execute()) {
         return true;
@@ -568,7 +572,6 @@ function createPdf($tpi, $dateSubmission)
     require("php/includes/print_enonce.php");
     $var = ob_get_clean();
     $html2pdf->writeHTML($var);
-    $html2pdf->writeHTML($tpi->description);
     $path = PATH_CREATEPDF . "Enonce_TPI_" . $tpi->year . "_" . $tpi->id . "_" . $user->lastName . "_" . $user->firstName . ".pdf";
     $html2pdf->output($path, 'F');
 }
@@ -589,7 +592,7 @@ function getTpiByIdInArray($id, $arrTpi)
 function getTpiByIdWithMedia($id)
 {
     $database = UserDbConnection();
-    $query = $database->prepare("SELECT t.tpiID,m.mediaID,m.mediaPath 
+    $query = $database->prepare("SELECT t.tpiID,t.tpiStatus,m.mediaID,m.mediaPath 
     FROM tpidbthh.tpis as t 
     LEFT JOIN medias as m
     ON m.tpiID = t.tpiID
@@ -602,8 +605,8 @@ function getTpiByIdWithMedia($id)
             return false;
         }
         $tpi = new cTpi();
-        $tpi->id = $id;
         $tpi->id = $row[0]['tpiID'];
+        $tpi->tpiStatus =$row[0]['tpiStatus'];
         if ($row[0]['mediaID'] != null) {
             foreach ($row as $line) {
                 $media = new cMedia();
@@ -718,16 +721,16 @@ function displayFormForAdminWithDisplayMessage($tpi, $arrUserManager, $arrUserEx
     $fullNameManager = getNameUserByIdByArray($tpi->userManagerId, $arrUserManager);
     $fullNameCandidat = getNameUserByIdByArray($tpi->userCandidateId, $arrUserCandidat);
 
-    if ($tpi->userExpertId !== "") {
+    if ($tpi->userExpertId !== null) {
         $fullNameExpert1 = getNameUserByIdByArray($tpi->userExpertId, $arrUserExpert);
     } else {
-        $emptyExpert1 = true;
+        $fullNameExpert1 = "EXPERT 1";
     }
 
-    if ($tpi->userExpertId2 !== "") {
+    if ($tpi->userExpertId2 !== null) {
         $fullNameExpert2 = getNameUserByIdByArray($tpi->userExpertId2, $arrUserExpert);
     } else {
-        $emptyExpert2 = true;
+        $fullNameExpert2 = "EXPERT 2";
     }
 
     $html = "<form class=\"toggle-class uk-flex uk-flex-center uk-background-muted uk-height-viewport\" action=\"modifyTPI.php?tpiId=" . $tpi->id . "\" method=\"POST\">";
@@ -741,14 +744,10 @@ function displayFormForAdminWithDisplayMessage($tpi, $arrUserManager, $arrUserEx
     } else {
         $html .= displayUserInSelect($fullNameManager, "selectManager", $arrUserManager, false, $tpi->userManagerId);
         $html .= displayUserInSelect($fullNameCandidat, "selectCandidat", $arrUserCandidat, false, $tpi->userCandidateId);
-        if ($emptyExpert1)
-            $html .= displayUserInSelect("Expert 1", "selectExpert1", $arrUserExpert, false, $tpi->userExpertId);
-        else
+
             $html .= displayUserInSelect($fullNameExpert1, "selectExpert1", $arrUserExpert, false, $tpi->userExpertId);
 
-        if ($emptyExpert2)
-            $html .= displayUserInSelect("Expert 2", "selectExpert2", $arrUserExpert, false, $tpi->userExpertId2);
-        else
+
             $html .= displayUserInSelect($fullNameExpert2, "selectExpert2", $arrUserExpert, false, $tpi->userExpertId2);
     }
 
@@ -819,8 +818,13 @@ function displayFormForExpertWithDisplayMessage($tpi)
     return $html;
 }
 
-function displayFormForManagerWithDisplayMessage($tpi)
+function displayFormForManagerWithDisplayMessage($tpi,$arrDateTime)
 {
+    
+    ob_start();
+    require("php/includes/formManager.php");
+    return ob_get_clean();
+  
 }
 
 function buttonChangeRoleListTpi($arrRole, $role)
