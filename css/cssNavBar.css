@@ -1,5 +1,5 @@
-.uk-navbar-container.uk-light:not(.uk-navbar-transparent):not(.uk-navbar-primary) {
-  background: #222;
+.uk-navbar-container.color {
+  background: rgb(230, 230, 230);
 }
 
 #mobile-navbar .uk-offcanvas-bar {
@@ -20,5 +20,5 @@
 }
 
 .uk-sticky-fixed {
-  box-shadow: 0 1px 5px 0 #0e0e0e;
+  box-shadow: 0 1px 5px 0 #ffffff;
 }
