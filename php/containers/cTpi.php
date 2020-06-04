@@ -81,18 +81,18 @@ class cTpi{
     /** @var [string] Lieu de travail pour le TPI */
     public $workplace;
 
-    /** @var [string] Descrition du TPI */
+    /** @var [string] Description du TPI */
     public $description;
 
-    /** @var [string] Date de rendu du TPI */
+    /** @var [string] Date de soumission du TPI par un Manager*/
     public $submissionDate;
 
-    /** @var [string] Chemin vers le pdf */
+    /** @var [string] Nom du pdf */
     public $pdfPath;
 
     /** @var [cEvaluationCriterion] Tableau de critères du TPI */
     public $evaluationCriterions;
     
-    /** @var [cEvaluationCriterion] Tableau de media du TPI */
+    /** @var [cMedia] Tableau de media du TPI */
     public $medias;
 }

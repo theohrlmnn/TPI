@@ -20,7 +20,7 @@ class cMedia{
         $this->originalName = $InOriginalName;
         $this->mediaPath = $InMediaPath;
         $this->mimeType = $InMimeType;
-        $this->tpiID = $InTpiId;
+        $this->tpiId = $InTpiId;
     }
     /** @var [int] Id unique du media */
     public $id;
@@ -28,10 +28,10 @@ class cMedia{
     /** @var [string] Nom original du media */
     public $originalName;
 
-    /** @var [int] Chemin du media */
+    /** @var [string] Nom du media */
     public $mediaPath;
 
-    /** @var [int] Type du mime du media */
+    /** @var [string] Type du mime du media */
     public $mimeType;
 
     /** @var [int] TPI associé au media */

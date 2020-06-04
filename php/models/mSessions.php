@@ -89,7 +89,7 @@ function getIdUserSession()
 /**
  * Fonction permettant de connaitre le role d'un utilisateur si il est connecté
  *
- * @return string Retourne le prénom
+ * @return array Retourne le prénom
  */
 function getRoleUserSession()
 {
@@ -100,7 +100,7 @@ function getRoleUserSession()
 /**
  * Fonction permettant de connaitre les droits d'un utilisateur si il est connecté
  *
- * @return string Retourne le tableau droit
+ * @return array Retourne le tableau droit
  */
 function getRightUserSession()
 {

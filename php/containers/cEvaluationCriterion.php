@@ -20,7 +20,7 @@ class cEvaluationCriterion{
         $this->criterionGroup = $InCriterionGroup;
         $this->criterionNumber = $InCriterionNumber;
         $this->criterionDescription = $InCriterionDescription;
-        $this->tpiID = $InTpiId;
+        $this->tpiId = $InTpiId;
     }
     /** @var [int] Id unique du critère d'évaluation */
     public $id;
@@ -28,7 +28,7 @@ class cEvaluationCriterion{
     /** @var [ENUM('A', 'B', 'C')] Groupe de correction du critère d'évaluation*/
     public $criterionGroup;
 
-    /** @var [int] Chemin du critère d'évaluation */
+    /** @var [int] Numéro du critère d'évaluation */
     public $criterionNumber;
 
     /** @var [string] Description du critère d'évaluation */
