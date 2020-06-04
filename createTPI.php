@@ -61,6 +61,10 @@ if ($btnCreate) {
         $abstract = filter_input(INPUT_POST, "tbxAbstract", FILTER_SANITIZE_STRING);
         $workplace = filter_input(INPUT_POST, "tbxWorkPlace", FILTER_SANITIZE_STRING);
 
+        $sessionStartTime = filter_input(INPUT_POST, "tbxTimeStartSession", FILTER_SANITIZE_STRING);
+        $sessionEndTime = filter_input(INPUT_POST, "tbxTimeEndSession", FILTER_SANITIZE_STRING);
+        $presentationTime = filter_input(INPUT_POST, "tbxTimePresentation", FILTER_SANITIZE_STRING);
+
         $dateStartSession = filter_input(INPUT_POST, "tbxDateStartSession", FILTER_SANITIZE_STRING);
         if (empty($dateStartSession)) {
             $dateStartSession = null;
@@ -75,6 +79,9 @@ if ($btnCreate) {
         }
         $dateSubmission = date("Y-m-d H:i:s");
 
+        $sessionStart = formatDateAndTime($dateStartSession, $sessionStartTime);
+        $sessionEnd = formatDateAndTime($dateEndSession, $sessionStartTime);
+        $presentationDate = formatDateAndTime($datePresentation, $presentationTime);
 
         $tpi = new cTpi();
         $tpi->year = $year;
@@ -85,11 +92,10 @@ if ($btnCreate) {
         $tpi->title = $title;
         $tpi->cfcDomain = $domaineCFC;
         $tpi->abstract = $abstract;
-        $tpi->sessionStart = $dateStartSession;
-        $tpi->sessionEnd = $dateEndSession;
-        $tpi->presentationDate = $datePresentation;
+        $tpi->sessionStart = $sessionStart;
+        $tpi->sessionEnd = $sessionEnd;
+        $tpi->presentationDate = $presentationDate;
         $tpi->workplace = $workplace;
-        $tpi->submissionDate = $dateSubmission;
 
         if (createTpi($tpi)) {
             $messages = array(
@@ -185,6 +191,13 @@ $arrUserExpert = getAllUserByRole(RL_EXPERT);
             </div>
             <div class="uk-margin-small">
                 <div class="uk-inline uk-width-1-1">
+                    <label class="uk-form-label" for="form-horizontal-text">Heure du début de la session :</label>
+                    <span class="uk-form-icon uk-form-icon-flip"></span>
+                    <input name="tbxTimeStartSession" class="uk-input uk-border-pill" type="time">
+                </div>
+            </div>
+            <div class="uk-margin-small">
+                <div class="uk-inline uk-width-1-1">
                     <label class="uk-form-label" for="form-horizontal-text">Date de la fin de la session :</label>
                     <span class="uk-form-icon uk-form-icon-flip"></span>
                     <input name="tbxDateEndSession" class="uk-input uk-border-pill" type="date">
@@ -192,9 +205,23 @@ $arrUserExpert = getAllUserByRole(RL_EXPERT);
             </div>
             <div class="uk-margin-small">
                 <div class="uk-inline uk-width-1-1">
+                    <label class="uk-form-label" for="form-horizontal-text">Heure de la fin de la session :</label>
+                    <span class="uk-form-icon uk-form-icon-flip"></span>
+                    <input name="tbxTimeEndSession" class="uk-input uk-border-pill" type="time">
+                </div>
+            </div>
+            <div class="uk-margin-small">
+                <div class="uk-inline uk-width-1-1">
                     <label class="uk-form-label" for="form-horizontal-text">Date de la présentation du TPI :</label>
                     <span class="uk-form-icon uk-form-icon-flip"></span>
                     <input name="tbxDatePresentation" class="uk-input uk-border-pill" type="date">
+                </div>
+            </div>
+            <div class="uk-margin-small">
+                <div class="uk-inline uk-width-1-1">
+                    <label class="uk-form-label" for="form-horizontal-text">Heure de la présentation du TPI :</label>
+                    <span class="uk-form-icon uk-form-icon-flip"></span>
+                    <input name="tbxTimePresentation" class="uk-input uk-border-pill" type="time">
                 </div>
             </div>
             <div>
