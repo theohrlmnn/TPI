@@ -75,7 +75,7 @@
 
       <li><a href="index.php"> Action non implémentée</a></li>
       <li class="uk-text-center">
-        <h4 class="uk-margin-top"><a href="redactionToi.php">Rédaction</a></h4>
+        <h4 class="uk-margin-top"><a href="redactionTPI.php">Rédaction</a></h4>
       </li>
       <?php
       $arrRight = getRightUserSession();
@@ -111,9 +111,15 @@
         <?= getLastNameUserSession() ?>
         <?= getFirstNameUserSession() ?>
       </p>
-      <p class="uk-margin-remove">
-        <?= getRoleNameUserSession() ?>
-      </p>
+      <?php
+       foreach(getRoleNameUserSession() as $r)
+       {
+        echo "<p class=\"uk-margin-remove\">";
+        echo $r;
+        echo "</p>";
+       }
+       ?>
+      
     </div>
   </div>
 

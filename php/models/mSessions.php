@@ -110,25 +110,30 @@ function getRightUserSession()
 
 function getRoleNameUserSession()
 {
-    $role = min($_SESSION['user']['userLogged']->role);
+    $role = $_SESSION['user']['userLogged']->role;
+    $arrayNameRole = array();
 
-    switch ($role) {
-        case RL_ADMINISTRATOR:
-            return "Administrateur";
-            break;
-        case RL_EXPERT:
-            return "Expert";
-            break;
-        case RL_MANAGER:
-            return "Chef de projet";
-            break;
-        case RL_CANDIDATE:
-            return "Candidat";
-            break;
-        default:
-            return "";
-            break;
+    foreach ($role as $r) {
+        switch ($r) {
+            case RL_ADMINISTRATOR:
+                array_push($arrayNameRole,"Administrateur");
+                break;
+            case RL_EXPERT:
+                array_push($arrayNameRole,"Expert");
+                break;
+            case RL_MANAGER:
+                array_push($arrayNameRole,"Chef de projet");
+                break;
+            case RL_CANDIDATE:
+                array_push($arrayNameRole,"Candidat");
+                break;
+            default:
+                return "";
+                break;
+        }
     }
+    return $arrayNameRole;
+    
 }
 
 function destroySession()

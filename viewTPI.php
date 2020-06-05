@@ -31,8 +31,12 @@ $btnPdf = filter_input(INPUT_POST, "btnPdf", FILTER_SANITIZE_STRING);
 $arrRoles = getRoleUserSession();
 $role = min($arrRoles);
 $tpi = getTpiByIDAllInfo($id);
-
-
+$tpi->evaluationCriterions = getCriterionWithTpiId($tpi->id);
+$arrDateTime = getTimeAndDateToTpi($tpi);
+$candidat = getUserById($tpi->userCandidateId);
+$expert1 = getUserById($tpi->userExpertId);
+$expert2 = getUserById($tpi->userExpertId2);
+$manager = getUserById($tpi->userManagerId);
 
 ?>
 <!DOCTYPE html>
@@ -57,233 +61,221 @@ $tpi = getTpiByIDAllInfo($id);
                     <label class="uk-form-label" for="form-horizontal-text">Titre</label>
                     <div class="uk-inline uk-width-1-1">
                         <span class="uk-form-icon uk-form-icon-flip" data-uk-icon="icon: user"></span>
-                        <input name="tbxTitle" class="uk-input uk-border-pill" placeholder="<?= $tpi->title?>" type="text" disabled>
+                        <input name="tbxTitle" class="uk-input uk-border-pill" value="<?= $tpi->title?>" type="text" disabled>
                     </div>
                 </div>
                 <div>
                     <label class="uk-form-label" for="form-horizontal-text">Lieu de travail</label>
                     <div class="uk-inline uk-width-1-1">
                         <span class="uk-form-icon uk-form-icon-flip" data-uk-icon="icon: home"></span>
-                        <input name="tbxWorkPlace" class="uk-input uk-border-pill" placeholder="A domicile" type="text" disabled>
+                        <input name="tbxWorkPlace" class="uk-input uk-border-pill" value="<?= $tpi->workplace?>" type="text" disabled>
                     </div>
                 </div>
                 <div>
                     <label class="uk-form-label" for="form-horizontal-text">Domaine CFC</label>
                     <div class="uk-inline uk-width-1-1">
                         <span class="uk-form-icon uk-form-icon-flip" data-uk-icon="icon: info"></span>
-                        <input name="tbxDomainCFC" class="uk-input uk-border-pill" placeholder="Développement d'applications" type="text" disabled>
+                        <input name="tbxDomainCFC" class="uk-input uk-border-pill" value="<?= $tpi->cfcDomain?>" type="text" disabled>
                     </div>
                 </div>
                 <div>
                     <label class="uk-form-label " for="form-horizontal-text">Année du TPI</label>
                     <div class="uk-inline uk-width-1-1">
                         <span class="uk-form-icon uk-form-icon-flip" data-uk-icon="icon: calendar"></span>
-                        <input name="tbxYear" class="uk-input uk-border-pill" required placeholder="2020" type="number" disabled>
+                        <input name="tbxYear" class="uk-input uk-border-pill" value="<?= $tpi->year?>" type="number" disabled>
                     </div>
                 </div>
-                <div>
-                    <label class="uk-form-label" for="form-horizontal-text">Titre</label>
-                    <div class="uk-inline uk-width-1-1">
-                        <span class="uk-form-icon uk-form-icon-flip" data-uk-icon="icon: user"></span>
-                        <input name="tbxTitle" class="uk-input uk-border-pill" placeholder="Outil de collaboration pour le collège d’experts, modules Répartition et ..." type="text" disabled>
-                    </div>
-                </div>
-                <div>
-                    <label class="uk-form-label" for="form-horizontal-text">Domaine CFC</label>
-                    <div class="uk-inline uk-width-1-1">
-                        <span class="uk-form-icon uk-form-icon-flip" data-uk-icon="icon: info"></span>
-                        <input name="tbxDomainCFC" class="uk-input uk-border-pill" placeholder="Développement d'applications" type="text" disabled>
-                    </div>
-                </div>
+                <div></div>
+                <div></div>
                 <div>
                 <label class="uk-form-label" for="form-horizontal-text">Experts :  </label>
                     <div class="uk-margin-top"uk-form-custom="target:> * > span:first-child\">
-                        <button class="uk-button uk-button-default" type="button" tabindex="-1\">
-                            <span>Candidat</span>
+                        <button class="uk-button uk-button-default" type="button" tabindex="-1\" disabled>
+                            <span><?php echo $expert1->firstName ." ". $expert1->lastName?></span>
                         </button>
                     </div>
                     <div disable class="uk-margin-top uk-margin-left"uk-form-custom="target:> * > span:first-child\">   
-                        <button  class="uk-button uk-button-default" type="button" tabindex="-1\">
-                            <span>Candidat</span>
+                        <button  class="uk-button uk-button-default" type="button" tabindex="-1\" disabled>
+                            <span><?php echo $expert2->firstName ." ". $expert2->lastName?></span>
                         </button>
                     </div>
                 </div>
                 <div>
                 <label class="uk-form-label" for="form-horizontal-text">Chef de projet :  </label>
                     <div class="uk-margin-top"uk-form-custom="target:> * > span:first-child\"> 
-                        <button class="uk-button uk-button-default" type="button" tabindex="-1\">
-                            <span>Candidat</span>
+                        <button class="uk-button uk-button-default" type="button" tabindex="-1\" disabled>
+                            <span><?php echo $manager->firstName ." ". $manager->lastName?></span>
                         </button>
                     </div>
                 </div>
                 <div>
                 <label class="uk-form-label" for="form-horizontal-text">Candidat :  </label>
                     <div class="uk-margin-top"uk-form-custom="target:> * > span:first-child\"> 
-                        <button class="uk-button uk-button-default" type="button" tabindex="-1\">
-                            <span>Candidat</span>
+                        <button class="uk-button uk-button-default" type="button" tabindex="-1\" disabled>
+                            <span><?php echo $candidat->firstName ." ". $candidat->lastName?></span>
                         </button>
                     </div>
                 </div>
                 <div>
                     <label class="uk-form-label" for="form-horizontal-text">Date du début de la session :</label>
                     <span class="uk-form-icon uk-form-icon-flip"></span>
-                    <input name="tbxDateStartSession" class="uk-input uk-border-pill" type="date" disabled>
+                    <input name="tbxDateStartSession" value="<?= $arrDateTime["start"]["date"]?>" class="uk-input uk-border-pill" type="date" disabled>
                 </div>
                 <div>
                     <label class="uk-form-label" for="form-horizontal-text">Date de la fin de la session :</label>
                     <span class="uk-form-icon uk-form-icon-flip"></span>
-                    <input name="tbxDateEndSession" class="uk-input uk-border-pill" type="date" disabled>
+                    <input name="tbxDateEndSession" value="<?= $arrDateTime["end"]["date"] ?>" class="uk-input uk-border-pill" type="date" disabled>
                 </div>
                 <div>
                     <label class="uk-form-label" for="form-horizontal-text">Date de la présentation du TPI :</label>
                     <span class="uk-form-icon uk-form-icon-flip"></span>
-                    <input name="tbxDatePresentation" class="uk-input uk-border-pill" type="date" disabled>
+                    <input name="tbxDatePresentation" value="<?= $arrDateTime["presentation"]["date"]?>" class="uk-input uk-border-pill" type="date" disabled>
                 </div>
                 <div>
                     <label class="uk-form-label" for="form-horizontal-text">Numéro du Critère 1</label>
                     <div class="uk-inline uk-width-1-1">
                         <span class="uk-form-icon uk-form-icon-flip"></span>
-                        <input name="tbxCriterionNumber1" value="14" class="uk-input uk-border-pill" placeholder="14" type="text" disabled>
+                        <input name="tbxCriterionNumber1" value="<?= $tpi->evaluationCriterions[0]->criterionNumber ?>" class="uk-input uk-border-pill" type="text" disabled>
                     </div>
                 </div>
                 <div>
                     <label class="uk-form-label" for="form-horizontal-text">Groupe Critère 1</label>
                     <div class="uk-inline uk-width-1-1">
                         <span class="uk-form-icon uk-form-icon-flip"></span>
-                        <input name="tbxCriterionGroup1" class="uk-input uk-border-pill" placeholder="A" type="text" disabled>
+                        <input name="tbxCriterionGroup1" value="<?= $tpi->evaluationCriterions[0]->criterionGroup ?>" class="uk-input uk-border-pill"  type="text" disabled>
                     </div>
                 </div>
                 <div>
                     <label class="uk-form-label" for="form-horizontal-text">Description du Critère 1</label>
                     <div class="uk-inline uk-width-1-1">
                         <span class="uk-form-icon uk-form-icon-flip"></span>
-                        <input name="tbxCriterionDescription1" class="uk-input uk-border-pill" placeholder="Tenue du journal de travail" type="text" disabled>
+                        <input name="tbxCriterionDescription1" value="<?= $tpi->evaluationCriterions[0]->criterionDescription ?>" class="uk-input uk-border-pill"  type="text" disabled>
                     </div>
                 </div>
                 <div>
                     <label class="uk-form-label" for="form-horizontal-text">Numéro du Critère 2</label>
                     <div class="uk-inline uk-width-1-1">
                         <span class="uk-form-icon uk-form-icon-flip"></span>
-                        <input name="tbxCriterionNumber2" value="15" class="uk-input uk-border-pill" placeholder="15" type="text" disabled>
+                        <input name="tbxCriterionNumber2" value="<?= $tpi->evaluationCriterions[1]->criterionNumber ?>"  class="uk-input uk-border-pill"  type="text" disabled>
                     </div>
                 </div>
                 <div>
                     <label class="uk-form-label" for="form-horizontal-text">Groupe Critère 2</label>
                     <div class="uk-inline uk-width-1-1">
                         <span class="uk-form-icon uk-form-icon-flip"></span>
-                        <input name="tbxCriterionGroup2" class="uk-input uk-border-pill" placeholder="A" type="text" disabled>
+                        <input name="tbxCriterionGroup2" value="<?= $tpi->evaluationCriterions[1]->criterionGroup ?>" class="uk-input uk-border-pill"  type="text" disabled>
                     </div>
                 </div>
                 <div>
                     <label class="uk-form-label" for="form-horizontal-text">Description du Critère 2</label>
                     <div class="uk-inline uk-width-1-1">
                         <span class="uk-form-icon uk-form-icon-flip"></span>
-                        <input name="tbxCriterionDescription2" class="uk-input uk-border-pill" placeholder="Tenue du journal de travail" type="text" disabled>
+                        <input name="tbxCriterionDescription2" value="<?= $tpi->evaluationCriterions[1]->criterionDescription ?>" class="uk-input uk-border-pill"  type="text" disabled>
                     </div>
                 </div>
                 <div>
                     <label class="uk-form-label" for="form-horizontal-text">Numéro du Critère 3</label>
                     <div class="uk-inline uk-width-1-1">
                         <span class="uk-form-icon uk-form-icon-flip"></span>
-                        <input name="tbxCriterionNumber3" value="16" class="uk-input uk-border-pill" placeholder="16" type="text" disabled>
+                        <input name="tbxCriterionNumber3" value="<?= $tpi->evaluationCriterions[2]->criterionNumber ?>" class="uk-input uk-border-pill"  type="text" disabled>
                     </div>
                 </div>
                 <div>
                     <label class="uk-form-label" for="form-horizontal-text">Groupe Critère 3</label>
                     <div class="uk-inline uk-width-1-1">
                         <span class="uk-form-icon uk-form-icon-flip"></span>
-                        <input name="tbxCriterionGroup3" class="uk-input uk-border-pill" placeholder="A" type="text" disabled>
+                        <input name="tbxCriterionGroup3" value="<?= $tpi->evaluationCriterions[2]->criterionGroup ?>" class="uk-input uk-border-pill"  type="text" disabled>
                     </div>
                 </div>
                 <div>
                     <label class="uk-form-label" for="form-horizontal-text">Description du Critère 3</label>
                     <div class="uk-inline uk-width-1-1">
                         <span class="uk-form-icon uk-form-icon-flip"></span>
-                        <input name="tbxCriterionDescription3" class="uk-input uk-border-pill" placeholder="Tenue du journal de travail" type="text" disabled>
+                        <input name="tbxCriterionDescription3" value="<?= $tpi->evaluationCriterions[2]->criterionDescription ?>" class="uk-input uk-border-pill"  type="text" disabled>
                     </div>
                 </div>
                 <div>
                     <label class="uk-form-label" for="form-horizontal-text">Numéro du Critère 4</label>
                     <div class="uk-inline uk-width-1-1">
                         <span class="uk-form-icon uk-form-icon-flip"></span>
-                        <input name="tbxCriterionNumber4" value="17" class="uk-input uk-border-pill" placeholder="17" type="text" disabled>
+                        <input name="tbxCriterionNumber4" value="<?= $tpi->evaluationCriterions[3]->criterionNumber ?>" class="uk-input uk-border-pill"  type="text" disabled>
                     </div>
                 </div>
                 <div>
                     <label class="uk-form-label" for="form-horizontal-text">Groupe Critère 4</label>
                     <div class="uk-inline uk-width-1-1">
                         <span class="uk-form-icon uk-form-icon-flip"></span>
-                        <input name="tbxCriterionGroup4" class="uk-input uk-border-pill" placeholder="A" type="text" disabled>
+                        <input name="tbxCriterionGroup4" value="<?= $tpi->evaluationCriterions[3]->criterionGroup ?>" class="uk-input uk-border-pill"  type="text" disabled>
                     </div>
                 </div>
                 <div>
                     <label class="uk-form-label" for="form-horizontal-text">Description du Critère 4</label>
                     <div class="uk-inline uk-width-1-1">
                         <span class="uk-form-icon uk-form-icon-flip"></span>
-                        <input name="tbxCriterionDescription4" class="uk-input uk-border-pill" placeholder="Tenue du journal de travail" type="text" disabled>
+                        <input name="tbxCriterionDescription4" value="<?= $tpi->evaluationCriterions[3]->criterionDescription ?>" class="uk-input uk-border-pill"  type="text" disabled>
                     </div>
                 </div>
                 <div>
                     <label class="uk-form-label" for="form-horizontal-text">Numéro du Critère 5</label>
                     <div class="uk-inline uk-width-1-1">
                         <span class="uk-form-icon uk-form-icon-flip"></span>
-                        <input name="tbxCriterionNumber5" value="18" class="uk-input uk-border-pill" placeholder="18" type="text" disabled>
+                        <input name="tbxCriterionNumber5" value="<?= $tpi->evaluationCriterions[4]->criterionNumber ?>" class="uk-input uk-border-pill" type="text" disabled>
                     </div>
                 </div>
                 <div>
                     <label class="uk-form-label" for="form-horizontal-text">Groupe Critère 5</label>
                     <div class="uk-inline uk-width-1-1">
                         <span class="uk-form-icon uk-form-icon-flip"></span>
-                        <input name="tbxCriterionGroup5" class="uk-input uk-border-pill" placeholder="A" type="text" disabled>
+                        <input name="tbxCriterionGroup5" value="<?= $tpi->evaluationCriterions[4]->criterionGroup ?>" class="uk-input uk-border-pill"  type="text" disabled>
                     </div>
                 </div>
                 <div>
                     <label class="uk-form-label" for="form-horizontal-text">Description du Critère 5</label>
                     <div class="uk-inline uk-width-1-1">
                         <span class="uk-form-icon uk-form-icon-flip"></span>
-                        <input name="tbxCriterionDescription5" class="uk-input uk-border-pill" placeholder="Tenue du journal de travail" type="text" disabled>
+                        <input name="tbxCriterionDescription5" value="<?= $tpi->evaluationCriterions[4]->criterionDescription ?>" class="uk-input uk-border-pill"  type="text" disabled>
                     </div>
                 </div>
                 <div>
                     <label class="uk-form-label" for="form-horizontal-text">Numéro du Critère 6</label>
                     <div class="uk-inline uk-width-1-1">
                         <span class="uk-form-icon uk-form-icon-flip"></span>
-                        <input name="tbxCriterionNumber6" value="19" class="uk-input uk-border-pill" placeholder="19" type="text" disabled>
+                        <input name="tbxCriterionNumber6" value="<?= $tpi->evaluationCriterions[5]->criterionNumber ?>" class="uk-input uk-border-pill"  type="text" disabled>
                     </div>
                 </div>
                 <div>
                     <label class="uk-form-label" for="form-horizontal-text">Groupe Critère 6</label>
                     <div class="uk-inline uk-width-1-1">
                         <span class="uk-form-icon uk-form-icon-flip"></span>
-                        <input name="tbxCriterionGroup6" class="uk-input uk-border-pill" placeholder="A" type="text" disabled>
+                        <input name="tbxCriterionGroup6" value="<?= $tpi->evaluationCriterions[5]->criterionGroup ?>" class="uk-input uk-border-pill"  type="text" disabled>
                     </div>
                 </div>
                 <div>
                     <label class="uk-form-label" for="form-horizontal-text">Description du Critère 6</label>
                     <div class="uk-inline uk-width-1-1">
                         <span class="uk-form-icon uk-form-icon-flip"></span>
-                        <input name="tbxCriterionDescription6" class="uk-input uk-border-pill" placeholder="Tenue du journal de travail" type="text" disabled>
+                        <input name="tbxCriterionDescription6" value="<?= $tpi->evaluationCriterions[5]->criterionDescription ?>" class="uk-input uk-border-pill"  type="text" disabled>
                     </div>
                 </div>
                 <div>
                     <label class="uk-form-label" for="form-horizontal-text">Numéro du Critère 7</label>
                     <div class="uk-inline uk-width-1-1">
                         <span class="uk-form-icon uk-form-icon-flip"></span>
-                        <input name="tbxCriterionNumber7" value="20" class="uk-input uk-border-pill" placeholder="20" type="text" disabled>
+                        <input name="tbxCriterionNumber7" value="<?= $tpi->evaluationCriterions[6]->criterionNumber ?>" class="uk-input uk-border-pill" type="text" disabled>
                     </div>
                 </div>
                 <div>
                     <label class="uk-form-label" for="form-horizontal-text">Groupe Critère 7</label>
                     <div class="uk-inline uk-width-1-1">
                         <span class="uk-form-icon uk-form-icon-flip"></span>
-                        <input name="tbxCriterionGroup7" class="uk-input uk-border-pill" placeholder="A" type="text" disabled>
+                        <input name="tbxCriterionGroup7" value="<?= $tpi->evaluationCriterions[6]->criterionGroup ?>" class="uk-input uk-border-pill"  type="text" disabled>
                     </div>
                 </div>
                 <div>
-                    <label class="uk-form-label" for="form-horizontal-text">Groupe Critère 7</label>
+                    <label class="uk-form-label" for="form-horizontal-text">Description Critère 7</label>
                     <div class="uk-inline uk-width-1-1">
                         <span class="uk-form-icon uk-form-icon-flip"></span>
-                        <input name="tbxCriterionGroup7" class="uk-input uk-border-pill" placeholder="A" type="text" disabled>
+                        <input name="tbxCriterionGroup7" value="<?= $tpi->evaluationCriterions[6]->criterionDescription ?>" class="uk-input uk-border-pill"  type="text" disabled>
                     </div>
                 </div>
 
@@ -293,7 +285,7 @@ $tpi = getTpiByIDAllInfo($id);
                     <label class="uk-form-label" for="form-horizontal-text">Résumé</label>
                     <div class="uk-inline uk-width-1-1">
                         <span class="uk-form-icon uk-form-icon-flip" data-uk-icon="icon: comment"></span>
-                        <textarea name="tbxAbstract" class="uk-input " placeholder="Le but principal de cette application est de donner aux membres du collège ..." type="text" disabled></textarea>
+                        <textarea name="tbxAbstract" class="uk-input " value="<?= $tpi->abstract ?>" type="text" disabled></textarea>
                     </div>
                 </div>
             </div>

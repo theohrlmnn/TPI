@@ -66,13 +66,6 @@
                     <input name="tbxTimePresentation" value="<?= $arrDateTime['presentation']['time'] ?>" class="uk-input uk-border-pill" type="time">
                 </div>
                 <div>
-                    <label class="uk-form-label " for="form-horizontal-text">Année du TPI</label>
-                    <div class="uk-inline uk-width-1-1">
-                        <span class="uk-form-icon uk-form-icon-flip" data-uk-icon="icon: calendar"></span>
-                        <input name="tbxYear" value="<?= $tpi->year ?>" class="uk-input uk-border-pill" placeholder="2020" type="number">
-                    </div>
-                </div>
-                <div>
                     <label class="uk-form-label" for="form-horizontal-text">Résumé</label>
                     <div class="uk-inline uk-width-1-1">
                         <span class="uk-form-icon uk-form-icon-flip"></span>
@@ -85,6 +78,8 @@
                         <span class="uk-form-icon uk-form-icon-flip"></span>
                         <textarea id="editor" name="editor"></textarea>
                     </div>
+                </div>
+                <div>
                 </div>
                 <div>
                     <label class="uk-form-label" for="form-horizontal-text">Numéro du Critère 1</label>

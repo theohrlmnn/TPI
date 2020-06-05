@@ -8,6 +8,7 @@
 */
 require_once("php/inc.all.php");
 
+
 $btnLogin = filter_input(INPUT_POST, "btnLogin");
 
 if (islogged()) {

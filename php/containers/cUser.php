@@ -25,6 +25,8 @@ class cUser{
         $this->phone = $InPhone;
         $this->role = $InRole;
         $this->right = $InRight;
+
+        
     }
     
     /** @var [int] Id unique de l'utilisateur */

@@ -81,6 +81,11 @@ switch ($role) {
                 };
             } else {
                 # TO DO : Gerer information dans plusieurs table Confirmation bien supprimer tpi
+                $messages = array(
+                    array("message" => "Impossible de supprimer le TPI.", "type" => AL_SUCESS)
+                );
+                setMessage($messages);
+                setDisplayMessage(true);
             }
         }
 
@@ -187,11 +192,13 @@ switch ($role) {
                     $tpiUpdate = getTpiByID($tpi->id);
                     foreach ($arrTpi as $indexArray => $tpi) {
                         if ($tpi->id == $tpiUpdate->id) {
-                            $arrTpi[$indexArray] = $tpiUpdate;
+                            $tpi->tpiStatus = $tpiUpdate->tpiStatus;
+                            $tpi->pdfPath = $tpiUpdate->tpi->pdfPath;
+                            //$arrTpi[$indexArray] .= $tpiUpdate;
                         }
                     }
                     $messages = array(
-                        array("message" => "Le TPI a bien été invalidé.", "type" => AL_SUCESS)
+                        array("message" => "Le TPI a bien été soumis.", "type" => AL_SUCESS)
                     );
                     setMessage($messages);
                     setDisplayMessage(true);

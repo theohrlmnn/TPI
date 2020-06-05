@@ -35,7 +35,7 @@ class cEvaluationCriterion{
     public $criterionDescription;
 
     /** @var [int] TPI associé au critère d'évaluation */
-    public $tpiID;
+    public $tpiId;
 
 }
 
