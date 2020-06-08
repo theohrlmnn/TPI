@@ -9,9 +9,11 @@
 require_once("php/inc.all.php");
 
 /**
- * Fonction permettant de récuperer un user avec son mot de passe haché et son email pour se connecter
+ * Fonction permettant de connecter un user avec son mot de passe haché et son email
  *
  * @param [User] $u L'objet du user voulant se connecter
+ * @param [string] $pswd Mot de passe
+ * 
  * @return bool true si ok, false si problème
  */
 function signIn($u, $pswd)
@@ -73,6 +75,13 @@ function signIn($u, $pswd)
     }
 }
 
+/**
+ * Fonction permettant de récuperer tous les users d'un role
+ *
+ * @param [string] $roleID Role
+ * 
+ * @return array[cUser] tableau si ok, false si problème
+ */
 function getAllUserByRole($roleID)
 {
     $arrUser = array();
@@ -96,7 +105,14 @@ function getAllUserByRole($roleID)
     return false;
 }
 
-//A changer faut rendre cUser pas un string  
+/**
+ * Fonction permettant de récupérer le nom et le prénom dans bon format
+ *
+ * @param [string] $id de l'utilisateur
+ * @param [array[cUser]] $arrUser Tableau d'utilisateur
+ * 
+ * @return string return prénom et nom si ok, false si problème
+ */
 function getNameUserByIdByArray($id, $arrUser)
 {
     foreach ($arrUser as $user) {
@@ -108,12 +124,19 @@ function getNameUserByIdByArray($id, $arrUser)
     return false;
 }
 
+/**
+ * Fonction permettant de récupérer l'utilisateur avec un id
+ *
+ * @param [string] $id de l'utilisateur
+ * 
+ * @return cUser return cUser ok, false si problème
+ */
 function getUserById($id)
 {
     $arrUser = array();
     $database = UserDbConnection();
 
-    $query = $database->prepare("SELECT users.lastName, users.firstName FROM users WHERE userID = :userID");
+    $query = $database->prepare("SELECT lastName, firstName, companyName, address, email, phone FROM users WHERE userID = :userID");
     $query->bindParam(":userID", $id, PDO::PARAM_STR);
 
     if ($query->execute()) {
@@ -122,8 +145,36 @@ function getUserById($id)
         $u = new cUser();
         $u->lastName = $row[0]["lastName"];
         $u->firstName = $row[0]["firstName"];
+        $u->compagnyName = $row[0]["companyName"];
+        $u->address = $row[0]["address"];
+        $u->email = $row[0]["email"];
+        $u->phone = $row[0]["phone"];
 
         return $u;
+    }
+    return false;
+}
+
+/**
+ * Fonction permettant de récupérer la classe d'un candidat
+ *
+ * @param [string] $id de l'utilisateur
+ * 
+ * @return string return classe ok, false si problème
+ */
+function getClasseByIdCandidat($id)
+{
+    $database = UserDbConnection();
+
+    $query = $database->prepare("SELECT className
+    FROM tpidbthh.classes as c 
+    LEFT JOIN user_classes as uc
+    ON uc.ClassID = c.classID
+    WHERE uc.userCandidateID = :userCandidateID");
+    $query->bindParam(":userCandidateID", $id, PDO::PARAM_STR);
+    if ($query->execute()) {
+        $row = $query->fetch(PDO::FETCH_ASSOC);
+        return $row["className"];
     }
     return false;
 }

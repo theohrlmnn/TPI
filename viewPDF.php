@@ -12,10 +12,10 @@ require "vendor/autoload.php";
 
 use Spipu\Html2Pdf\Html2Pdf;
 
-if (!islogged()) {
+if (!islogged() && getRoleUserSession() != RL_CANDIDATE) {
 
     $messages = array(
-        array("message" => "Vous devez être connecté pour voir ceci.", "type" => AL_DANGER)
+        array("message" => "Vous n'avez pas les droits pour ceci.", "type" => AL_DANGER)
     );
     setMessage($messages);
     setDisplayMessage(true);

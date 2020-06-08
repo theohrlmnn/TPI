@@ -55,7 +55,7 @@ switch ($role) {
         if ($btnDelete) {
             $tpi = getTpiByIdWithMedia($btnDelete);
             $listTable = array(
-                "wishes", "tpi_validations", "evaluation_criterions", "tpi_evaluations", "tpi_evaluations_criterions"
+                "wishes", "tpi_validations", "tpi_evaluations", "tpi_evaluations_criterions"
             );
 
             foreach ($listTable as $t) {
@@ -96,7 +96,7 @@ switch ($role) {
                     $tpiUpdate = getTpiByID($tpi->id);
                     foreach ($arrTpi as $indexArray => $tpi) {
                         if ($tpi->id == $tpiUpdate->id) {
-                            $arrTpi[$indexArray] = $tpiUpdate;
+                            $tpi->tpiStatus = $tpiUpdate->tpiStatus;
                         }
                     }
                     $messages = array(
@@ -145,7 +145,8 @@ switch ($role) {
                     $tpiUpdate = getTpiByID($tpi->id);
                     foreach ($arrTpi as $indexArray => $tpi) {
                         if ($tpi->id == $tpiUpdate->id) {
-                            $arrTpi[$indexArray] = $tpiUpdate;
+                            $tpi->tpiStatus = $tpiUpdate->tpiStatus;
+                            $tpi->pdfPath = $tpiUpdate->pdfPath;
                         }
                     }
                     $messages = array(
@@ -193,8 +194,7 @@ switch ($role) {
                     foreach ($arrTpi as $indexArray => $tpi) {
                         if ($tpi->id == $tpiUpdate->id) {
                             $tpi->tpiStatus = $tpiUpdate->tpiStatus;
-                            $tpi->pdfPath = $tpiUpdate->tpi->pdfPath;
-                            //$arrTpi[$indexArray] .= $tpiUpdate;
+                            $tpi->pdfPath = $tpiUpdate->pdfPath;
                         }
                     }
                     $messages = array(

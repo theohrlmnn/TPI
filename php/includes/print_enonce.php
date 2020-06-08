@@ -1,7 +1,7 @@
 <?php
 // Ce fichier contient la mise en forme pour l'impresssion PDF de l'évaluation
 // Il a fonctionné avec html2pdf pour la réalisation du jeu de données.
-$la = "lds";
+$var  = "sjdkdfjms";
 ?>
 <style>
     <!--
@@ -112,25 +112,25 @@ $la = "lds";
             <td width="310">
                 <h4>Candidat</h4>
                 <p>
-                    <span class="label">Nom : </span><?=$user->lastName?><br>
-                    <span class="label">Prénom : </span><?=$user->firstName?><br>
-                    <span class="label">Classe : </span>CANDIDATE_CLASSTNAME<br>
-                    <span class="label">Téléphone : </span>CANDIDATE_PHONE<br>
-                    <span class="label">Email : </span>CANDIDATE_EMAIL
+                    <span class="label">Nom : </span><?=$candidate->lastName?><br>
+                    <span class="label">Prénom : </span><?=$candidate->firstName?><br>
+                    <span class="label">Classe : </span><?=$classe?><br>
+                    <span class="label">Téléphone : </span><?=$candidate->phone?><br>
+                    <span class="label">Email : </span><?=$candidate->email?>
                 </p>
             </td>
             <td width="310">
                 <h4>Entreprise formatrice</h4>
                 <p>
-                    <span class="label">Société : </span>MANAGER_COMPANY_NAME<br>
-                    <span class="label">Adresse : </span>MANAGER_COMPANY_ADDRESS<br>
+                    <span class="label">Société : </span><?=$manager->compagnyName?><br>
+                    <span class="label">Adresse : </span><?=$manager->address?><br>
                 </p>
                 <h4>Formateur</h4>
                 <p>
-                    <span class="label">Nom : </span>MANAGER_LAST_NAME<br>
-                    <span class="label">Prénom : </span>MANAGER_FIRST_NAME<br>
-                    <span class="label">Téléphone : </span>MANAGER_PHONE<br>
-                    <span class="label">Email : </span>MANAGER_EMAIL
+                    <span class="label">Nom : </span><?=$manager->lastName?><br>
+                    <span class="label">Prénom : </span><?=$manager->firstName?><br>
+                    <span class="label">Téléphone : </span><?=$manager->phone?><br>
+                    <span class="label">Email : </span><?=$manager->email?>
                 </p>
             </td>
         </tr>
@@ -139,19 +139,19 @@ $la = "lds";
                 <td width="310">
                     <h4>1<sup>er</sup> Expert</h4>
                     <p>
-                        <span class="label">Nom : </span>EXPERT1_LAST_NAME<br>
-                        <span class="label">Prénom : </span>EXPERT1_FIRST_NAME<br>
-                        <span class="label">Téléphone : </span>EXPERT1_PHONE<br>
-                        <span class="label">Email : </span>EXPERT1_EMAIL
+                        <span class="label">Nom : </span><?=$expert1->lastName?><br>
+                        <span class="label">Prénom : </span><?=$expert1->firstName?><br>
+                        <span class="label">Téléphone : </span><?=$expert1->phone?><br>
+                        <span class="label">Email : </span><?=$expert1->email?>
                     </p>
                 </td>
                 <td width="310">
                     <h4>2<sup>ème</sup> Expert</h4>
                     <p>
-                        <span class="label">Nom : </span>EXPERT2_LAST_NAME<br>
-                        <span class="label">Prénom : </span>EXPERT2_FIRST_NAME<br>
-                        <span class="label">Téléphone : </span>EXPERT2_PHONE<br>
-                        <span class="label">Email : </span>EXPERT2_EMAIL
+                        <span class="label">Nom : </span><?=$expert2->lastName?><br>
+                        <span class="label">Prénom : </span><?=$expert2->firstName?><br>
+                        <span class="label">Téléphone : </span><?=$expert2->phone?><br>
+                        <span class="label">Email : </span><?=$expert2->email?>
                     </p>
                 </td>
             </tr>
@@ -173,7 +173,7 @@ $la = "lds";
         </tr>
         <tr>
             <th width="100" class="lowerline">Dates</th>
-            <td width="510" class="lowerline">du JJ MMMM AAAA au JJ MMMM AAAA, de HH:MM à HH:MM</td>
+            <td width="510" class="lowerline">du <?=$dateTpi["start"]["date"] ?> au <?=$dateTpi["end"]["date"] ?>, de <?=$dateTpi["start"]["time"] ?> à <?=$dateTpi["start"]["time"] ?></td>
         </tr>
         <tr>
             <th width="100" class="lowerline">Lieu où se déroule le travail</th>
@@ -190,7 +190,7 @@ $la = "lds";
     <p class="attention">Il est interdit au candidat de prendre connaissance de l'énoncé du travail de TPI avant le début de celui-ci.
         <br>L'énoncé lui sera transmis par les experts, par messagerie, le matin du 1er jour du TPI avant 7h30</p>
     <hr>
-    <p>Document soumis au collège d'experts le : JJ MMMM AAAA à HH:MM</p>
+    <p>Document soumis au collège d'experts le : <?=$dateTpi["submission"]["date"] ?> à <?=$dateTpi["submission"]["time"] ?></p>
 
 </page>
 
@@ -200,7 +200,7 @@ $la = "lds";
             <tr>
                 <td style="width: 100%; text-align: right">
                     Procédure de qualification : 88600/1/2/3 Informaticienne CFC/Informaticien CFC (Ordonnance 2014)<br>
-                    Enoncé du TPI, Candidat-e : <?=$user->lastName?> <?=$user->firstName?></td>
+                    Enoncé du TPI, Candidat-e : <?=$candidate->lastName?> <?=$candidate->firstName?></td>
             </tr>
         </table>
     </page_header>
@@ -231,7 +231,7 @@ $la = "lds";
             <tr>
                 <td style="width: 100%; text-align: right">
                     Procédure de qualification : 88600/1/2/3 Informaticienne CFC/Informaticien CFC (Ordonnance 2014)<br>
-                    Enoncé du TPI, Candidat-e : <?=$user->lastName?> <?=$user->firstName?></td>
+                    Enoncé du TPI, Candidat-e : <?=$candidate->lastName?> <?=$candidate->firstName?></td>
             </tr>
         </table>
     </page_header>
@@ -250,16 +250,19 @@ $la = "lds";
     <h2>Points techniques spécifiques au projet (points A14 à A20 du formulaire d'évaluation)</h2>
     <hr>
     <table>
-        BOUCLE SUR LES CRITERE D'EVALUATION A14 à A20
+    <?php 
+    foreach ($tpi->evaluationCriterions as $ec) {?>
+        
             <tr>
-                <th width="60">Axx</th>
-                <td width="580">DESCRIPTION</td>
+                <th width="60"><?= $ec->criterionNumber?></th>
+                <td width="580"><?= $ec->criterionDescription?></td>
             </tr>
             <tr>
                 <td colspan="2">
                     <hr>
                 </td>
             </tr>
-        FIN DE BOUCLE
+       <?php }?>
+        
     </table>
 </page>

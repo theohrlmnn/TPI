@@ -8,7 +8,7 @@
 */
 
 /**
- * Fonction permettant de définir si un utilisateur est connecté ou non
+ * Fonction permettant de définir si un utilisateur est n'est pas connecté
  *
  */
 function setIfLogged()
@@ -43,11 +43,19 @@ function isLogged()
     }
 }
 
+/**
+ * Fonction permettant de récupérer l'id du TPI dans la session
+ *
+ */
 function getIdTpiSession()
 {
     return $_SESSION['tpi']['id'];
 }
 
+/**
+ * Fonction permettant d'envoyer l'id du TPI dans la session
+ *
+ */
 function setIdTpiSession($id)
 {
     $_SESSION['tpi']['id'] = $id;
@@ -65,7 +73,7 @@ function getFirstNameUserSession()
 }
 
 /**
- * Fonction permettant de connaitre le prénom d'un utilisateur si il est connecté
+ * Fonction permettant de connaitre le nom d'un utilisateur si il est connecté
  *
  * @return string Retourne le prénom
  */
@@ -87,9 +95,9 @@ function getIdUserSession()
 }
 
 /**
- * Fonction permettant de connaitre le role d'un utilisateur si il est connecté
+ * Fonction permettant de connaitre le rôle  d'un utilisateur si il est connecté
  *
- * @return array Retourne le prénom
+ * @return array Retourne le rôle de l'utilisateur connnecté
  */
 function getRoleUserSession()
 {
@@ -108,6 +116,11 @@ function getRightUserSession()
         return $_SESSION['user']['userLogged']->right;
 }
 
+/**
+ * Fonction permettant de connaitre le nom du/des rôle d'un utilisateur 
+ *
+ * @return array Retourne le tableau de rôle
+ */
 function getRoleNameUserSession()
 {
     $role = $_SESSION['user']['userLogged']->role;
@@ -136,6 +149,10 @@ function getRoleNameUserSession()
     
 }
 
+/**
+ * Fonction permettant de détruire la session 
+ *
+ */
 function destroySession()
 {
     session_destroy();

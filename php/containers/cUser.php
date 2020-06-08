@@ -20,7 +20,7 @@ class cUser{
         $this->lastName = $InlastName;
         $this->firstName = $InfirstName;
         $this->compagnyName = $InCompagnyName;
-        $this->adress = $InAddress;
+        $this->address = $InAddress;
         $this->email = $InEmail;
         $this->phone = $InPhone;
         $this->role = $InRole;
@@ -42,7 +42,7 @@ class cUser{
     public $compagnyName;
 
     /** @var [string] Adresse de l'utilisateur */
-    public $adress;
+    public $address;
 
     /** @var [string] Email de l'utilisateur */
     public $email;

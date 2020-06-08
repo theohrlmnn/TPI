@@ -8,6 +8,12 @@
 */
 require_once("php/inc.all.php");
 
+/**
+ * Fonction permettant de récupérer d'ajouter un media
+ *
+ * @param cMedia $media media qu'on veut ajouter dans la base de donnée
+ * @return bool return true si Ok, false si problème
+ */
 function addMedia($media)
 {
     $database = UserDbConnection();
@@ -26,6 +32,12 @@ function addMedia($media)
 
 }
 
+/**
+ * Fonction permettant de supprimer tous les media d'un TPI via son Id
+ *
+ * @param cTpi $tpi tpi qui contient l'id
+ * @return bool return $e Exception si problème
+ */
 function deleteAllMediaByTpiId($tpi)
 {
     try {
@@ -38,6 +50,12 @@ function deleteAllMediaByTpiId($tpi)
     }
 }
 
+/**
+ * Fonction permettant de verifier le type du media est une image
+ *
+ * @param string $type mime du media
+ * @return string return "image" si oui, null si non
+ */
 function getFormatMedia($type)
 {
     $arrType = explode("/", $type);
@@ -48,6 +66,12 @@ function getFormatMedia($type)
     return $arrType[0];
 }
 
+/**
+ * Fonction permettant de déterminier le réel extension du media
+ *
+ * @param string $type mime du media
+ * @return string return l'exentsion
+ */
 function getRealExtensionMedia($type)
 {
     $arrType = explode("/", $type);

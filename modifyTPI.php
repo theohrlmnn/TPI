@@ -42,7 +42,7 @@ if ($tpi->userManagerId == $idUser) {
     $role = RL_MANAGER;
 } else if ($tpi->userExpertId == $idUser || $tpi->userExpertId2 == $idUser) {
     $role = RL_EXPERT;
-} else if(min(getRoleUserSession()) != RL_ADMINISTRATOR){
+} else if (min(getRoleUserSession()) != RL_ADMINISTRATOR) {
     $messages = array(
         array("message" => "Impossible de récuper les informations du TPI.", "type" => AL_DANGER)
     );
@@ -51,8 +51,7 @@ if ($tpi->userManagerId == $idUser) {
 
     header('Location: listTPI.php');
     exit;
-}
-else {
+} else {
     $role = RL_ADMINISTRATOR;
 }
 
@@ -74,7 +73,7 @@ switch ($role) {
 
 
 
-        
+
 
         if ($btnModify) {
             $manager = filter_input(INPUT_POST, "selectManager", FILTER_SANITIZE_NUMBER_INT);
@@ -150,7 +149,7 @@ switch ($role) {
 
             if ($tpi->sessionEnd != null && $tpi->sessionEnd > $presentationDate) {
                 $messages = array(
-                    array("message" => "La date de présentation ne peut pas être avant la fin de session qui est le ".$tpi->sessionEnd, "type" => AL_DANGER)
+                    array("message" => "La date de présentation ne peut pas être avant la fin de session qui est le " . $tpi->sessionEnd, "type" => AL_DANGER)
                 );
                 setMessage($messages);
                 setDisplayMessage(true);
@@ -177,7 +176,7 @@ switch ($role) {
 
             if ($ok) {
 
-                
+
 
                 if ($tpi->presentationDate != $presentationDate) {
                     $tpi->presentationDate = $presentationDate;
@@ -226,7 +225,7 @@ switch ($role) {
             $tpi->year = null;
             $tpi->userManagerId = null;
 
-            if ($tpi->tpiStatus == ST_DRAFT) { 
+            if ($tpi->tpiStatus == ST_DRAFT) {
                 $tpi->tpiStatus = null;
                 $title = filter_input(INPUT_POST, "tbxTitle", FILTER_SANITIZE_STRING);
                 if (empty($title))
@@ -351,7 +350,7 @@ switch ($role) {
                 $presentationDate = filter_input(INPUT_POST, "tbxDatePresentation", FILTER_SANITIZE_NUMBER_INT);
                 if (empty($presentationDate))
                     $presentationDate = null;
-                
+
                 if ($tpi->presentationDate != $presentationDate) {
                     $tpi->presentationDate = $presentationDate;
                     if (modifyTpiByManagerOnlyPresentationDate($tpi)) {
@@ -360,7 +359,6 @@ switch ($role) {
                         );
                         setMessage($messages);
                         setDisplayMessage(true);
-                        $tpi = $tpiUpdate;
                     } else {
                         $messages = array(
                             array("message" => "Un problème est apparu lors de la mise à jour du TPI", "type" => AL_DANGER)
@@ -371,7 +369,7 @@ switch ($role) {
                 }
             }
         }
-        $form = displayFormForManagerWithDisplayMessage($tpi, $arrDateTime);
+        $form = null;
         break;
     default:
         $messages = array(
@@ -418,15 +416,12 @@ switch ($role) {
     <script src="js/uikit-icons.js"></script>
     <?php if ($role == RL_MANAGER) { ?>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-        <script>
-            window.jQuery || document.write('<script src="js/vendor/jquery-3.3.1.min.js"><\/script>')
-        </script>
+
+        <!-- Import Trumbowyg -->
         <script src="node_modules/trumbowyg/dist/trumbowyg.min.js"></script>
         <!--Import dependency for Resizimg. For a production setup, follow install instructions here: https://github.com/RickStrahl/jquery-resizable -->
         <script src="//rawcdn.githack.com/RickStrahl/jquery-resizable/master/dist/jquery-resizable.min.js"></script>
 
-        <!-- Import Trumbowyg -->
-        <script src="node_modules/trumbowyg/dist/trumbowyg.js"></script>
 
         <!-- Import Trumbowyg colors JS -->
         <script src="node_modules/trumbowyg/dist/plugins/colors/trumbowyg.colors.min.js"></script>
@@ -447,8 +442,6 @@ switch ($role) {
         <!-- Import all plugins you want AFTER importing jQuery and Trumbowyg -->
         <script src="trumbowyg/dist/plugins/fontsize/trumbowyg.fontsize.min.js"></script>
 
-        <!-- Import Uilkit JS -->
-        <script src="node_modules/uikit-3.4.3/js/uikit.js"></script>
         <script>
             $(document).ready(function() {
                 $("#editor").trumbowyg({
@@ -477,6 +470,7 @@ switch ($role) {
             });
         </script>
     <?php } ?>
+
 </body>
 
 </html>

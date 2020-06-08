@@ -12,6 +12,11 @@ require "vendor/autoload.php";
 
 use Spipu\Html2Pdf\Html2Pdf;
 
+/**
+ * Fonction permettant de récupérer  un tableau contenant tous les TPI
+ *
+ * @return array[cTpi] tableau si ok, false si problème
+ */
 function getAllTpi()
 {
     $database = UserDbConnection();
@@ -36,6 +41,12 @@ function getAllTpi()
     return false;
 }
 
+/**
+ * Fonction permettant de récupérer  un TPI avec ces critères d'évaluations. Utilisé pour récupérer les champs modifiable par un expert
+ *
+ * @param int $id l'id du TPI qu'on veut recevoir 
+ * @return cTpi return le Tpi si Ok, false si problème
+ */
 function getTpiByIDWithCriterion($id)
 {
     $database = UserDbConnection();
@@ -87,12 +98,18 @@ function getTpiByIDWithCriterion($id)
     }
 }
 
+/**
+ * Fonction permettant de récupérer toutes les informations d'un TPI sans critère ou media
+ *
+ * @param int $id l'id du TPI qu'on veut recevoir 
+ * @return cTpi return le Tpi si Ok, false si problème
+ */
 function getTpiByIdAllInfo($id)
 {
     $database = UserDbConnection();
 
     $query = $database->prepare("SELECT year,userCandidateID,userManagerID,userExpert1ID,
-    userExpert2ID,title,cfcDomain,abstract,sessionStart,sessionEnd,presentationDate,workplace,description,submissionDate
+    userExpert2ID,title,cfcDomain,abstract,sessionStart,sessionEnd,presentationDate,workplace,description,submissionDate, pdfPath
     FROM tpidbthh.tpis 
     WHERE tpiID = :tpiId;");
     $query->bindParam(":tpiId", $id, PDO::PARAM_INT);
@@ -118,11 +135,18 @@ function getTpiByIdAllInfo($id)
         $tpi->workplace = $row[0]['workplace'];
         $tpi->description = $row[0]['description'];
         $tpi->submissionDate = $row[0]['submissionDate'];
+        $tpi->pdfPath = $row[0]['pdfPath'];
         return $tpi;
     }
     return null;
 }
 
+/**
+ * Fonction permettant de récupérer un TPI avec statut,titre,domaine du cfc, réusmé et le nom du pdf
+ *
+ * @param int $id l'id du TPI qu'on veut recevoir 
+ * @return cTpi return le Tpi si Ok, false si problème
+ */
 function getTpiByID($id)
 {
     $database = UserDbConnection();
@@ -146,6 +170,14 @@ function getTpiByID($id)
     }
 }
 
+/**
+ * Fonction permettant de récupérer un html pour afficher liste des TPI pour un Admin
+ *
+ * @param array[cTpi] $arrTpi tableau de tous les TPI
+ * @param array[int] $arrRole tous les rôle de l'utilisateur
+ * @param int $role role actuelle pour afficher le role en cours si l'utilisateur a plusieurs roles
+ * @return string return html de la liste
+ */
 function displayTPIAdmin($arrTpi, $arrRoles, $role)
 {
     $arrManager = getAllUserByRole(RL_MANAGER);
@@ -185,6 +217,14 @@ function displayTPIAdmin($arrTpi, $arrRoles, $role)
     return $html;
 }
 
+/**
+ * Fonction permettant de récupérer un html pour afficher liste des TPI pour un expert
+ *
+ * @param array[cTpi] $arrTpi tableau de tous les TPI
+ * @param array[int] $arrRole tous les rôle de l'utilisateur
+ * @param int $role role actuelle pour afficher le role en cours si l'utilisateur a plusieurs roles
+ * @return string return html de la liste
+ */
 function displayTPIExpert($arrTpi, $arrRoles, $role)
 {
     $arrManager = getAllUserByRole(RL_MANAGER);
@@ -223,6 +263,14 @@ function displayTPIExpert($arrTpi, $arrRoles, $role)
     return $html;
 }
 
+/**
+ * Fonction permettant de récupérer  un html pour afficher liste des TPI pour un chef de projet/ manager
+ *
+ * @param array[cTpi] $arrTpi tableau de tous les TPI
+ * @param array[int] $arrRole tous les rôle de l'utilisateur
+ * @param int $role role actuelle pour afficher le role en cours si l'utilisateur a plusieurs roles
+ * @return string return html de la liste
+ */
 function displayTPIManager($arrTpi, $arrRoles, $role)
 {
     $arrManager = getAllUserByRole(RL_MANAGER);
@@ -259,6 +307,16 @@ function displayTPIManager($arrTpi, $arrRoles, $role)
     return $html;
 }
 
+/**
+ * Fonction permettant de récupérer  un html pour afficher liste des utilisateurs dans un select
+ *
+ * @param string $textOption1 Valeur afficher par défaut exmple : Chef de project
+ * @param int $idSelect name du select pour pouvoir le récupérer 
+ * @param array[cUser] $arrUser tableau des users à afficher
+ * @param bool $required optionnel s'il est obligatoire default = false
+ * @param int $valueSelect1 optionnel si l'on veut donner une valeur au premier option default = ""
+ * @return string return html du select
+ */
 function displayUserInSelect($textOption1, $idSelect, $arrUser, $required = false, $valueSelect1 = "")
 {
     $html = "<div uk-form-custom=\"target: > * > span:first-child\">";
@@ -285,6 +343,12 @@ function displayUserInSelect($textOption1, $idSelect, $arrUser, $required = fals
     return $html;
 }
 
+/**
+ * Fonction permettant de récupérer  un TPI avec statut,titre,domaine du cfc, résumé  et le nom du pdf
+ *
+ * @param cTpi $tpi Le Tpi qu'on veut créer dans la base de donnée 
+ * @return bool return true si Ok, false si problème
+ */
 function createTpi($tpi)
 {
     $database = UserDbConnection();
@@ -311,6 +375,11 @@ function createTpi($tpi)
     }
 }
 
+/**
+ * Fonction permettant de recevoir un tpi avec les champs qui sont modifiable par un expert
+ * @param int $id id du TPI qu'on veut recevoir 
+ * @return cTpi return true si Ok, false si problème
+ */
 function getTpiByIdToModifiyByExpert($id)
 {
     $database = UserDbConnection();
@@ -331,6 +400,12 @@ function getTpiByIdToModifiyByExpert($id)
     return false;
 }
 
+/**
+ * Fonction permettant de recevoir un tpi avec les champs qui sont modifiable par un admin
+ * 
+ * @param int $id id du TPI qu'on veut recevoir 
+ * @return cTpi return true si Ok, false si problème
+ */
 function getTpiByIdToModifiyByAdmin($id)
 {
     $database = UserDbConnection();
@@ -354,6 +429,11 @@ function getTpiByIdToModifiyByAdmin($id)
     return false;
 }
 
+/**
+ * Fonction permettant de recevoir un tableau de TPI qui depuis un id de la session Expert
+ * 
+ * @return array[cTpi] return tableau de TPI si Ok, false si problème
+ */
 function getAllTpiByIdUserExpertSession()
 {
     $id = getIdUserSession();
@@ -382,6 +462,11 @@ function getAllTpiByIdUserExpertSession()
     return false;
 }
 
+/**
+ * Fonction permettant de recevoir un tableau de TPI qui depuis un id de la session Manager / Chef de projet
+ * 
+ * @return array[cTpi] return tableau de TPI si Ok, false si problème
+ */
 function getAllTpiByIdUserManagerSession()
 {
     $id = getIdUserSession();
@@ -412,6 +497,12 @@ function getAllTpiByIdUserManagerSession()
     return false;
 }
 
+/**
+ * Fonction permettant de modifier un TPI avec les champs modifiable par un admin
+ *
+ * @param cTpi $tpi Le Tpi qu'on veut modifier dans la base de donnée 
+ * @return bool return true si Ok, false si problème
+ */
 function modifyTpiByAdmin($tpi)
 {
     $database = UserDbConnection();
@@ -433,6 +524,12 @@ function modifyTpiByAdmin($tpi)
     }
 }
 
+/**
+ * Fonction permettant de modifier un TPI avec les champs modifiable par un expert
+ *
+ * @param cTpi $tpi Le Tpi qu'on veut modifier dans la base de donnée 
+ * @return bool return true si Ok, false si problème
+ */
 function modifyTpiByExpert($tpi)
 {
 
@@ -453,6 +550,12 @@ function modifyTpiByExpert($tpi)
     }
 }
 
+/**
+ * Fonction permettant de modifier un TPI avec les champs modifiable par un Manager
+ *
+ * @param cTpi $tpi Le Tpi qu'on veut modifier dans la base de donnée 
+ * @return bool return true si Ok, false si problème
+ */
 function modifyTpiByManager($tpi)
 {
     try {
@@ -464,7 +567,7 @@ function modifyTpiByManager($tpi)
         `sessionEnd` = :sessionEnd, `presentationDate` = :presentationDate, 
         `workplace` = :workplace, `description` = :description 
         WHERE (`tpiID` = :tpiID);");
-    
+
         $query->bindParam(":title", $tpi->title, PDO::PARAM_STR);
         $query->bindParam(":cfcDomain", $tpi->cfcDomain, PDO::PARAM_STR);
         $query->bindParam(":abstract", $tpi->abstract, PDO::PARAM_STR);
@@ -474,12 +577,13 @@ function modifyTpiByManager($tpi)
         $query->bindParam(":workplace", $tpi->workplace, PDO::PARAM_STR);
         $query->bindParam(":description", $tpi->description, PDO::PARAM_STR);
         $query->bindParam(":tpiID", $tpi->id, PDO::PARAM_INT);
-    
+
         $criterions = getCriterionWithTpiId($tpi->id);
         foreach ($tpi->evaluationCriterions as $cUpdate) {
             if ($cUpdate->id == -1) {
                 if ($cUpdate->criterionGroup != "" && $cUpdate->criterionNumber != "" && $cUpdate->criterionDescription != "") {
-                    createCriterion($cUpdate, $tpi->id);
+                    $cUpdate->tpiId = $tpi->id;
+                    createEvaluationCriterion($cUpdate);
                 }
             } else {
                 foreach ($criterions as $c) {
@@ -498,6 +602,12 @@ function modifyTpiByManager($tpi)
     }
 }
 
+/**
+ * Fonction permettant de modifier un TPI avec les champs modifiable par un manager quand seulement la date peut être modifier
+ *
+ * @param cTpi $tpi Le Tpi qu'on veut modifier dans la base de donnée 
+ * @return bool return true si Ok, false si problème
+ */
 function modifyTpiByManagerOnlyPresentationDate($tpi)
 {
     $database = UserDbConnection();
@@ -515,6 +625,12 @@ function modifyTpiByManagerOnlyPresentationDate($tpi)
     }
 }
 
+/**
+ * Fonction permettant de modifier de modifier un critère d'évalutation 
+ *
+ * @param cEvaluationCriterion $cUpdate critère qu'on veut mettre à jour
+ * @return bool return true si Ok, false si problème
+ */
 function updateCriterion($cUpdate)
 {
     $database = UserDbConnection();
@@ -534,7 +650,13 @@ function updateCriterion($cUpdate)
     }
 }
 
-function createCriterion($cUpdate, $tpiId)
+/**
+ * Fonction permettant de créer de modifier un critère d'évaluation 
+ *
+ * @param cEvaluationCriterion $cUpdate critère qu'on veut créer
+ * @return bool return true si Ok, false si problème
+ */
+function createEvaluationCriterion($cUpdate)
 {
     $database = UserDbConnection();
     $query = $database->prepare("INSERT INTO `tpidbthh`.`evaluation_criterions` 
@@ -544,7 +666,7 @@ function createCriterion($cUpdate, $tpiId)
     $query->bindParam(":criterionGroup", $cUpdate->criterionGroup, PDO::PARAM_STR);
     $query->bindParam(":criterionNumber", $cUpdate->criterionNumber, PDO::PARAM_STR);
     $query->bindParam(":criterionDescription", $cUpdate->criterionDescription, PDO::PARAM_STR);
-    $query->bindParam(":tpiID", $tpiId, PDO::PARAM_STR);
+    $query->bindParam(":tpiID", $cUpdate->tpiId, PDO::PARAM_STR);
 
     if ($query->execute()) {
         return true;
@@ -553,6 +675,12 @@ function createCriterion($cUpdate, $tpiId)
     }
 }
 
+/**
+ * Fonction permettant de récupérer un tpi avec ses critère d'd'évaluation 
+ *
+ * @param int $id TPI qu'on veut récupérer avec ses critère
+ * @return array[cEvaluationCriterion] return tableau critere du TPI si Ok, false si problème
+ */
 function getCriterionWithTpiId($id)
 {
     $database = UserDbConnection();
@@ -593,6 +721,12 @@ function getCriterionWithTpiId($id)
     }
 }
 
+/**
+ * Fonction permettant d'invalider un tpi 
+ *
+ * @param cTpi $tpi tpi qu'on veut invalider
+ * @return bool return true si Ok, false si problème
+ */
 function invalidateTpi($tpi)
 {
     deletePdf($tpi);
@@ -607,16 +741,22 @@ function invalidateTpi($tpi)
     }
 }
 
+/**
+ * Fonction permettant d'soumettre un tpi 
+ *
+ * @param cTpi $tpi tpi qu'on veut soumettre
+ * @return bool return true si Ok, false si problème
+ */
 function submitTpi($tpi)
 {
-    $dateSubmission = date("Y-m-d H:i:s");
-    $pdfPath = createPdf($tpi, $dateSubmission);
+    $submissionDate = date("Y-m-d H:i:s");
+    $pdfPath = createPdf($tpi, $submissionDate);
     if ($pdfPath) {
         $database = UserDbConnection();
         $query = $database->prepare("UPDATE `tpidbthh`.`tpis` SET `tpiStatus` = :tpiStatus, `pdfPath` = :pdfPath, `submissionDate` = :submissionDate WHERE (`tpiID` = :tpiID);");
         $query->bindValue(":tpiStatus", ST_SUBMITTED, PDO::PARAM_STR);
         $query->bindValue(":pdfPath", $pdfPath, PDO::PARAM_STR);
-        $query->bindValue(":submissionDate", $dateSubmission, PDO::PARAM_STR);
+        $query->bindValue(":submissionDate", $tpi->submissionDate, PDO::PARAM_STR);
         $query->bindParam(":tpiID", $tpi->id, PDO::PARAM_STR);
         if ($query->execute()) {
             return true;
@@ -625,7 +765,14 @@ function submitTpi($tpi)
         }
     }
 }
-//a voir
+
+
+/**
+ * Fonction permettant de supprimer un pdf 
+ *
+ * @param cTpi $tpi tpi qui contient le nom du pdf à supprimer
+ * @return bool return true si Ok, false si problème
+ */
 function deletePdf($tpi)
 {
     try {
@@ -636,24 +783,55 @@ function deletePdf($tpi)
     }
 }
 
-//TO DO try catch return false
-function createPdf($tpi, $dateSubmission)
+/**
+ * Fonction permettant de créer un pdf 
+ *
+ * @param cTpi $tpi tpi qui contient le nom du pdf à supprimer
+ * @param cTpi $submissionDate date de soumission 
+ * 
+ * @return bool return true si Ok, false si problème
+ */
+function createPdf($tpi, $submissionDate)
 {
-    $user = getUserById($tpi->userCandidateId);
     $tpi = getTpiByIdAllInfo($tpi->id);
-    $dateTtpi = getTimeAndDateToTpi($tpi);
+
+    $manager = getUserById($tpi->userManagerId);
+    $candidate = getUserById($tpi->userCandidateId);
+    if ($tpi->userExpertId != null) {
+        $expert1 = getUserById($tpi->userExpertId);
+    } else {
+        $expert1 = "";
+    }
+    if ($tpi->userExpertId2 != null) {
+        $expert2 = getUserById($tpi->userExpertId2);
+    } else {
+        $expert2 = "";
+    }
+
+    $classe = getClasseByIdCandidat($tpi->userCandidateId);
+    $tpi->submissionDate = $submissionDate;
+    $dateTpi = getTimeAndDateToTpi($tpi);
+
+    $tpi->evaluationCriterions = getCriterionWithTpiId($tpi->id);
     //"/var/www/html/TPI/php/modelspdf/Enonce_TPI_2020_76_Cart_Thibault.pdf"
     $html2pdf = new Html2Pdf();
     ob_start();
     require("php/includes/print_enonce.php");
     $var = ob_get_clean();
     $html2pdf->writeHTML($var);
-    $name = "Enonce_TPI_" . $tpi->year . "_" . $tpi->id . "_" . $user->lastName . "_" . $user->firstName . ".pdf";
+    $name = "Enonce_TPI_" . $tpi->year . "_" . $tpi->id . "_" . $candidate->lastName . "_" . $candidate->firstName . ".pdf";
     $path = PATH_CREATEPDF . $name;
     $html2pdf->output($path, 'F');
     return $name;
 }
 
+/**
+ * Fonction permettant de trouver un tpi dans un tableau de tpi 
+ *
+ * @param int $id id du tpi a trouver dans le tableau
+ * @param array[cTpi] $arrTpi tableau de TPI
+ * @return cTpi return TPI si Ok, false si problème
+ */
 function getTpiByIdInArray($id, $arrTpi)
 {
     foreach ($arrTpi as $tpi) {
@@ -667,6 +845,12 @@ function getTpiByIdInArray($id, $arrTpi)
     return $tpi;
 }
 
+/**
+ * Fonction permettant de récupérer  un TPI avec ces media 
+ *
+ * @param int $id l'id du TPI qu'on veut recevoir 
+ * @return cTpi return le Tpi si Ok, false si problème
+ */
 function getTpiByIdWithMedia($id)
 {
     $database = UserDbConnection();
@@ -700,12 +884,18 @@ function getTpiByIdWithMedia($id)
     return false;
 }
 
+/**
+ * Fonction permettant de supprimer un TPI
+ *
+ * @param cTpi $tpi le TPI qu'on veut supprimer 
+ * @return bool return true si Ok, false si problème
+ */
 function deleteTpi($tpi)
 {
     try {
-        //deleteEvaluationCriterions($tpi);
-        deleteAllMediaByTpiId($tpi);
         $database = UserDbConnection();
+        deleteEvaluationCriterions($tpi);
+        deleteAllMediaByTpiId($tpi);
         $database->beginTransaction();
         $query = $database->prepare("DELETE FROM `tpidbthh`.`tpis` WHERE (`tpiID` = :tpiID);");
         $query->bindParam(":tpiID", $tpi->id, PDO::PARAM_INT);
@@ -718,23 +908,12 @@ function deleteTpi($tpi)
     }
 }
 
-function addEvaluationCriterions($tpi)
-{
-    $database = UserDbConnection();
-    $query = $database->prepare("INSERT INTO `tpidbthh`.`evaluation_criterions` (`criterionGroup`, `criterionNumber`, `criterionDescription`, `tpiID`) 
-    VALUES (:criterionGroup, :criterionNumber, :criterionDescription, :tpiID);");
-    foreach ($tpi->evaluationCriterions as $ec) {
-        $query->bindParam(":criterionGroup", $ec->criterionGroup, PDO::PARAM_STR);
-        $query->bindParam(":criterionNumber", $ec->criterionNumber, PDO::PARAM_STR);
-        $query->bindParam(":criterionDescription", $ec->criterionDescription, PDO::PARAM_STR);
-        $query->bindParam(":tpiID", $tpi->id, PDO::PARAM_INT);
-        if (!$query->execute()) {
-            return false;
-        }
-    }
-    return true;
-}
-
+/**
+ * Fonction permettant de supprimer de critères d'un TPI
+ *
+ * @param cTpi $tpi le TPI dont on veut supprimer les critères
+ * @return Exception return exception $e si problème
+ */
 function deleteEvaluationCriterions($tpi)
 {
 
@@ -748,6 +927,13 @@ function deleteEvaluationCriterions($tpi)
     }
 }
 
+/**
+ * Fonction permettant de vérifier l'existence  d'une clée étrangère concernant un TPI
+ *
+ * @param cTpi $tpi le TPI dont on veut verifier
+ * @param string $nameTable nom de la table a verifier
+ * @return bool return true si true sinon false 
+ */
 function tpiExistIn($tpi, $nameTable)
 {
     // pas exactement sûr de ca
@@ -766,11 +952,18 @@ function tpiExistIn($tpi, $nameTable)
     }
 }
 
+/**
+ * Fonction permettant de de récupérer  les dates et heures en tableau
+ *
+ * @param cTpi $tpi le TPI dont on veut récupérer  les heures et dates
+ * @return array[string] return un tableau 2 dimensions avec les dates tpi 
+ */
 function getTimeAndDateToTpi($tpi)
 {
     $sessionStart = explode(" ", $tpi->sessionStart);
     $sessionEnd = explode(" ", $tpi->sessionEnd);
     $presentation = explode(" ", $tpi->presentationDate);
+    $submission = explode(" ", $tpi->submissionDate);
 
     if ($presentation[0] == "") {
         $presentation[] = "";
@@ -783,15 +976,30 @@ function getTimeAndDateToTpi($tpi)
     if ($sessionEnd[0] == "") {
         $sessionEnd[] = "";
     }
+
+    if ($submission[0] == "") {
+        $submission[] = "";
+    }
+
     $dateAndTimeTpi = array(
         "start"  => array("date" => $sessionStart[0], "time" => $sessionStart[1]),
         "end" => array("date" => $sessionEnd[0], "time" => $sessionEnd[1]),
-        "presentation"   => array("date" => $presentation[0], "time" => $presentation[1])
+        "presentation"   => array("date" => $presentation[0], "time" => $presentation[1]),
+        "submission"   => array("date" => $submission[0], "time" => $submission[1])
     );
     return $dateAndTimeTpi;
 }
 
-function displayFormForAdminWithDisplayMessage($tpi, $arrUserManager, $arrUserExpert, $arrUserCandidat, $problem)
+/**
+ * Fonction permettant de de récupérer  un formulaire  html pour admin
+ *
+ * @param cTpi $tpi le TPI dont on veut modifier
+ * @param array[cUser] $arrUserManager tableau d’utilisateur manager
+ * @param array[cUser] $arrUserExpert tableau d’utilisateur expert
+ * @param array[cUser] $arrUserCandidat tableau d’utilisateur candidat
+ * @return string return un formulaire html  
+ */
+function displayFormForAdminWithDisplayMessage($tpi, $arrUserManager, $arrUserExpert, $arrUserCandidat)
 {
     $emptyExpert1 = false;
     $emptyExpert2 = false;
@@ -814,20 +1022,11 @@ function displayFormForAdminWithDisplayMessage($tpi, $arrUserManager, $arrUserEx
     $html = "<form class=\"toggle-class uk-flex uk-flex-center uk-background-muted uk-height-viewport\" action=\"modifyTPI.php?tpiId=" . $tpi->id . "\" method=\"POST\">";
     $html .= "<fieldset class=\"uk-fieldset uk-margin-medium-top\">";
     $html .= displayMessage();
-    if ($problem) {
-        $html .= displayUserInSelect("Chef de Projet", "selectManager", $arrUserManager, false);
-        $html .= displayUserInSelect("Candidat", "selectCandidat", $arrUserCandidat, false);
-        $html .= displayUserInSelect("Expert 1", "selectExpert1", $arrUserExpert);
-        $html .= displayUserInSelect("Expert 2", "selectExpert2", $arrUserExpert);
-    } else {
-        $html .= displayUserInSelect($fullNameManager, "selectManager", $arrUserManager, false, $tpi->userManagerId);
-        $html .= displayUserInSelect($fullNameCandidat, "selectCandidat", $arrUserCandidat, false, $tpi->userCandidateId);
+    $html .= displayUserInSelect($fullNameManager, "selectManager", $arrUserManager, false, $tpi->userManagerId);
+    $html .= displayUserInSelect($fullNameCandidat, "selectCandidat", $arrUserCandidat, false, $tpi->userCandidateId);
+    $html .= displayUserInSelect($fullNameExpert1, "selectExpert1", $arrUserExpert, false, $tpi->userExpertId);
+    $html .= displayUserInSelect($fullNameExpert2, "selectExpert2", $arrUserExpert, false, $tpi->userExpertId2);
 
-        $html .= displayUserInSelect($fullNameExpert1, "selectExpert1", $arrUserExpert, false, $tpi->userExpertId);
-
-
-        $html .= displayUserInSelect($fullNameExpert2, "selectExpert2", $arrUserExpert, false, $tpi->userExpertId2);
-    }
 
 
     $html .= "<div class=\"uk-margin-small\">";
@@ -846,6 +1045,12 @@ function displayFormForAdminWithDisplayMessage($tpi, $arrUserManager, $arrUserEx
     return $html;
 }
 
+/**
+ * Fonction permettant de de récupérer  un formulaire  html pour expert
+ *
+ * @param cTpi $tpi le TPI dont on veut modifier
+ * @return string return un formulaire html  
+ */
 function displayFormForExpertWithDisplayMessage($tpi)
 {
 
@@ -885,7 +1090,12 @@ function displayFormForExpertWithDisplayMessage($tpi)
     return $html;
 }
 
-function displayFormForManagerWithDisplayMessage($tpi, $arrDateTime)
+/**
+ * Fonction permettant de de récupérer  un formulaire  html pour manager/ chef de projet
+ *
+ * @return string return un formulaire html  
+ */
+function displayFormForManagerWithDisplayMessage()
 {
 
     ob_start();
@@ -893,6 +1103,13 @@ function displayFormForManagerWithDisplayMessage($tpi, $arrDateTime)
     return ob_get_clean();
 }
 
+/**
+ * Fonction permettant de de récupérer  l'option pour la vue suivant le role à choisir
+ *
+ * @param array[string] $arrRole role de l'utilisateur
+ * @param string $role role actuelle pour la vue choisit
+ * @return string return les options html  
+ */
 function buttonChangeRoleListTpi($arrRole, $role)
 {
     if (count($arrRole) > 1) {
@@ -928,11 +1145,17 @@ function buttonChangeRoleListTpi($arrRole, $role)
     }
 }
 
+/**
+ * Fonction permettant de récupérer  un TPI d'un candidat
+ *
+ * @param string $id l'id du TPI qu'on veut recevoir 
+ * @return cTpi return le Tpi si Ok, false si problème
+ */
 function getTpiByCandidateId($id)
 {
     $database = UserDbConnection();
 
-    $query = $database->prepare("SELECT sessionStart, tpiStatus,pdfPath FROM tpidbthh.tpis WHERE userCandidateID = :userCandidateID;");
+    $query = $database->prepare("SELECT sessionStart, tpiStatus,pdfPath FROM tpidbthh.tpis WHERE userCandidateID = :userCandidateID; LIMIT 1");
     $query->bindParam(":userCandidateID", $id, PDO::PARAM_INT);
 
     if ($query->execute()) {
@@ -948,6 +1171,13 @@ function getTpiByCandidateId($id)
     }
 }
 
+/**
+ * Fonction permettant de concatener une date avec heure pour insertion dans base de donnée
+ *
+ * @param string $date la date
+ * @param string $time l'heure
+ * @return cTpi return la date et l'heure si Ok, false si problème
+ */
 function formatDateAndTime($date, $time)
 {
 

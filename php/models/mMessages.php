@@ -17,7 +17,7 @@ function setMessage($arrMessages)
 }
 
 /**
- * Fonction permettant de définir des messages dans un tableau
+ * Fonction permettant de définir si les messages doivent être affiché
  *
  * @return bool Retourne true si le message doit être afficher ou false si non
  */
@@ -28,9 +28,9 @@ function doesDisplayMessage()
 }
 
 /**
- * Fonction permettant de définir des messages dans un tableau
+ * Fonction permettant de définir si les messages doivent être affiché
  *
- * @param [bool] $nool Bool si message doit être affiché ou non
+ * @param [bool] $bool Bool si message doit être affiché ou non
  */
 function setDisplayMessage($bool)
 {
@@ -38,8 +38,7 @@ function setDisplayMessage($bool)
 }
 
 /**
- * Fonction permettant de définir des messages dans un tableau.
- * SetDisplayMessage à false après affichage
+ * Fonction permettant de récupérer  les messages dans un tableau pour affichage. SetDisplayMessage à false après affichage
  *
  * @return string Retourne un html qui contient des alertes
  */
@@ -62,6 +61,10 @@ function displayMessage()
     }
 }
 
+/**
+ * Fonction permettant de réinitialiser  les messages dans un tableau
+ *
+ */
 function resetMessages()
 {
     $_SESSION["message"]["messages"] = "";
