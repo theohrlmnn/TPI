@@ -1,10 +1,10 @@
 <?php
 require_once("php/inc.all.php");
 
-if (!islogged() && getRoleUserSession() == RL_CANDIDATE) {
+if (!islogged() || getRoleUserSession() == RL_CANDIDATE) {
 
     $messages = array(
-        array("message" => "Vous n'avez pas les droits pour ceci.", "type" => AL_DANGER)
+        array("message" => "Vous n'avez pas les droits pour voir ceci.", "type" => AL_DANGER)
     );
     setMessage($messages);
     setDisplayMessage(true);

@@ -1,5 +1,17 @@
 <?php
 require_once("php/inc.all.php");
+
+if (!islogged() || getRoleUserSession() == RL_CANDIDATE) {
+
+    $messages = array(
+        array("message" => "Vous n'avez pas les droits pour voir ceci.", "type" => AL_DANGER)
+    );
+    setMessage($messages);
+    setDisplayMessage(true);
+
+    header('Location: login.php');
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">

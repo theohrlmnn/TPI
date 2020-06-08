@@ -13,7 +13,7 @@ require "vendor/autoload.php";
 use Spipu\Html2Pdf\Html2Pdf;
 $role = min($arrRoles);
 
-if (!islogged() && $role == RL_CANDIDATE) {
+if (!islogged() || $role == RL_CANDIDATE) {
 
     $messages = array(
         array("message" => "Vous devez être connecté pour voir ceci.", "type" => AL_DANGER)

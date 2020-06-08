@@ -10,6 +10,7 @@ require_once("php/inc.all.php");
 
 
 $btnLogin = filter_input(INPUT_POST, "btnLogin");
+$email = "";
 
 if (islogged()) {
 	$role = min(getRoleUserSession());
@@ -45,6 +46,7 @@ if ($btnLogin) {
 			setMessage($messages);
 			setDisplayMessage(true);
 		}
+	} else {
 		$messages = array(
 			array("message" => "Veuillez remplir les champs.", "type" => AL_DANGER)
 		);
@@ -76,7 +78,7 @@ if ($btnLogin) {
 				<div class="uk-margin-small">
 					<div class="uk-inline uk-width-1-1">
 						<span class="uk-form-icon uk-form-icon-flip" data-uk-icon="icon: user"></span>
-						<input name="tbxEmail" class="uk-input uk-border-pill" required placeholder="Email" type="text">
+						<input name="tbxEmail" value="<?= $email ?> " class="uk-input uk-border-pill" required placeholder="Email" type="email">
 					</div>
 				</div>
 				<div class="uk-margin-small">
