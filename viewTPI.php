@@ -8,30 +8,53 @@
 */
 require_once("php/inc.all.php");
 
-require "vendor/autoload.php";
-
-use Spipu\Html2Pdf\Html2Pdf;
+$arrRoles = getRoleUserSession();
 $role = min($arrRoles);
 
-if (!islogged() || $role == RL_CANDIDATE) {
+if (!islogged() || $role == RL_CANDIDATE || $role == RL_ADMINISTRATOR) {
 
-    $messages = array(
-        array("message" => "Vous devez être connecté pour voir ceci.", "type" => AL_DANGER)
-    );
-    setMessage($messages);
-    setDisplayMessage(true);
+    if (count($arrRoles) == 1) {
+        $messages = array(
+            array("message" => "Vous n'avez pas les droits pour voir ceci.", "type" => AL_DANGER)
+        );
+        setMessage($messages);
+        setDisplayMessage(true);
 
-    header('Location: login.php');
-    exit;
+        header('Location: login.php');
+        exit;
+    } 
 }
 
 $id = filter_input(INPUT_GET, "tpiId", FILTER_SANITIZE_NUMBER_INT);
 
 $btnPdf = filter_input(INPUT_POST, "btnPdf", FILTER_SANITIZE_STRING);
 
-$arrRoles = getRoleUserSession();
+
 
 $tpi = getTpiByIDAllInfo($id);
+if (!$tpi) {
+    $messages = array(
+        array("message" => "Aucun TPI n'a pu être trouvé.", "type" => AL_DANGER)
+    );
+    setMessage($messages);
+    setDisplayMessage(true);
+
+    header('Location: home.php');
+    exit;
+}
+$idUser = getIdUserSession();
+if ( $idUser != $tpi->userManagerId || $idUser != $tpi->userExpertId && $idUser != $tpi->userExpertId2) {
+    $messages = array(
+        array("message" => "Vous n'avez pas les droits pour voir ceci.", "type" => AL_DANGER)
+    );
+    setMessage($messages);
+    setDisplayMessage(true);
+
+    header('Location: home.php');
+    exit;
+}
+
+
 $tpi->evaluationCriterions = getCriterionWithTpiId($tpi->id);
 $arrDateTime = getTimeAndDateToTpi($tpi);
 $candidat = getUserById($tpi->userCandidateId);
@@ -43,8 +66,7 @@ if ($btnPdf) {
         header("Content-Disposition: inline; filename=filename.pdf");
         @readfile(PATH_PDF . $tpi->pdfPath);
         exit;
-    }
-    else {
+    } else {
         $messages = array(
             array("message" => "Le PDF n'a pas encore été créé.", "type" => AL_DANGER)
         );
@@ -162,6 +184,21 @@ $manager = getUserById($tpi->userManagerId);
                     <label class="uk-form-label" for="form-horizontal-text">Date de la présentation du TPI :</label>
                     <span class="uk-form-icon uk-form-icon-flip"></span>
                     <input name="tbxDatePresentation" value="<?= $arrDateTime["presentation"]["date"] ?>" class="uk-input uk-border-pill" type="date" disabled>
+                </div>
+                <div>
+                    <label class="uk-form-label" for="form-horizontal-text">Heure du début de la session :</label>
+                    <span class="uk-form-icon uk-form-icon-flip"></span>
+                    <input name="tbxDateStartSession" value="<?= $arrDateTime["start"]["time"] ?>" class="uk-input uk-border-pill" type="time" disabled>
+                </div>
+                <div>
+                    <label class="uk-form-label" for="form-horizontal-text">Heure de la fin de la session :</label>
+                    <span class="uk-form-icon uk-form-icon-flip"></span>
+                    <input name="tbxDateEndSession" value="<?= $arrDateTime["end"]["time"] ?>" class="uk-input uk-border-pill" type="time" disabled>
+                </div>
+                <div>
+                    <label class="uk-form-label" for="form-horizontal-text">Heure de la présentation du TPI :</label>
+                    <span class="uk-form-icon uk-form-icon-flip"></span>
+                    <input name="tbxDatePresentation" value="<?= $arrDateTime["presentation"]["time"] ?>" class="uk-input uk-border-pill" type="time" disabled>
                 </div>
                 <div>
                     <label class="uk-form-label" for="form-horizontal-text">Numéro du Critère 1</label>

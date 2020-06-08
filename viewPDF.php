@@ -12,7 +12,7 @@ require "vendor/autoload.php";
 
 use Spipu\Html2Pdf\Html2Pdf;
 
-if (!islogged() && getRoleUserSession() != RL_CANDIDATE) {
+if (!islogged() || getRoleUserSession() != RL_CANDIDATE) {
 
     $messages = array(
         array("message" => "Vous n'avez pas les droits pour ceci.", "type" => AL_DANGER)
