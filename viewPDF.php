@@ -1,6 +1,6 @@
 <?php
 /*
- * File: viewPdf.php
+ * File: viewPDF.php
  * Author: Théo Hurlimann
  * Date: 26.05.2020
  * Description: Page pour l'affichage du pdf d'un candidat
@@ -8,11 +8,10 @@
 */
 require_once("php/inc.all.php");
 
-require "vendor/autoload.php";
 
-use Spipu\Html2Pdf\Html2Pdf;
-
-if (!islogged() || getRoleUserSession() != RL_CANDIDATE) {
+$arrRoles = getRoleUserSession();
+$role = min($arrRoles);
+if (!islogged() || $role != RL_CANDIDATE) {
 
     $messages = array(
         array("message" => "Vous n'avez pas les droits pour ceci.", "type" => AL_DANGER)
@@ -26,8 +25,8 @@ if (!islogged() || getRoleUserSession() != RL_CANDIDATE) {
 
 $btnPdf = filter_input(INPUT_POST, "btnPdf", FILTER_SANITIZE_STRING);
 
-$arrRoles = getRoleUserSession();
-$role = min($arrRoles);
+
+
 $tpi = "";
 if ($role == RL_CANDIDATE) {
     $tpi = getTpiByCandidateId(getIdUserSession());
@@ -66,7 +65,7 @@ if ($btnPdf) {
     echo displayMessage();
     ?>
     <div class="uk-container uk-margin-top">
-        <form action="viewPdf.php" class="uk-flex uk-flex-center" method="POST">
+        <form action="viewPDF.php" class="uk-flex uk-flex-center" method="POST">
             <fieldset class="uk-fieldset">
                 <div class="uk-margin-bottom">
                     <button name="btnPdf" value="Send" type="submit" class="uk-button uk-button-primary uk-border-pill uk-width-1-1">Voir votre TPI</button>

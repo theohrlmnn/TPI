@@ -132,6 +132,7 @@ switch ($role) {
                 header('Location: modifyTPI.php?tpiId=' . $btnModify);
                 exit;
             }
+            
         }
 
         if ($btnInvalidate) {

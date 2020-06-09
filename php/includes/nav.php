@@ -17,7 +17,9 @@
       <div class="uk-navbar-flip">
         <ul class="uk-navbar-nav">
           <div class="uk-margin-right uk-navbar-nav uk-navbar-right"><a class="uk-navbar-item uk-logo" href="#">
-              <li class="uk-navbar-right ">
+          <?php $role = min(getRoleUserSession());
+          if ($role != RL_CANDIDATE) {?>
+            <li class="uk-navbar-right ">
                 <a href="home.php">A propos&nbsp;</a>
               </li>
               <li class="uk-navbar-right ">
@@ -35,6 +37,11 @@
               <li class="uk-navbar-right ">
                 <a href="#">Evaluation&nbsp;</a>
               </li>
+            <?php }else{?>
+              <li class="uk-navbar-right ">
+                <a href="viewPDF.php">Voir énoncé&nbsp;</a>
+              </li>
+              <?php }?>
               <li>
                 <span uk-icon="icon: user; ratio: 2"></span>
                 <div class="uk-navbar-dropdown">

@@ -7,6 +7,8 @@
  * Version: 1.0 
 */
 require_once("php/inc.all.php");
+
+$arrRight = getRightUserSession();
 foreach ($arrRight as $r) {
 	if ($r == "logout") {
 		destroySession();

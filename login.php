@@ -32,11 +32,17 @@ if ($btnLogin) {
 		$u = new cUser();
 		$u->email = $email;
 		if (signin($u, $pswd)) {
+			$role = min(getRoleUserSession());
 			$messages = array(
 				array("message" => "Bienvenu " . getFirstNameUserSession(), "type" => AL_SUCESS)
 			);
 			setMessage($messages);
 			setDisplayMessage(true);
+			if ($role == RL_CANDIDATE) {
+				header('Location: viewPDF.php');
+				exit;
+			}
+
 			header('Location: home.php');
 			exit;
 		} else {

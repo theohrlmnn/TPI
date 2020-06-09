@@ -1,7 +1,8 @@
 <?php
 require_once("php/inc.all.php");
 
-if (!islogged() || getRoleUserSession() != RL_MANAGER) {
+
+if (!islogged()) {
 
     $messages = array(
         array("message" => "Vous n'avez pas les droits pour ceci.", "type" => AL_DANGER)

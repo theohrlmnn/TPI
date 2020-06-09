@@ -44,7 +44,7 @@ if ($tpi->userManagerId == $idUser) {
     $role = RL_EXPERT;
 } else if (min(getRoleUserSession()) != RL_ADMINISTRATOR) {
     $messages = array(
-        array("message" => "Impossible de récuper les informations du TPI.", "type" => AL_DANGER)
+        array("message" => "Impossible de récupérer les informations du TPI.", "type" => AL_DANGER)
     );
     setMessage($messages);
     setDisplayMessage(true);
@@ -121,6 +121,13 @@ switch ($role) {
                         setDisplayMessage(true);
                     }
                 }
+                else {
+                    $messages = array(
+                        array("message" => "Impossible de mettre à jour avec les mêmes données", "type" => AL_WARNING)
+                    );
+                    setMessage($messages);
+                    setDisplayMessage(true);
+                }
             }
         }
         $form = displayFormForAdminWithDisplayMessage($tpi, $arrUserManager, $arrUserExpert, $arrUserCandidat, $problem);
@@ -156,24 +163,6 @@ switch ($role) {
                 $ok = false;
             }
 
-            /*if (empty($presentationTime)) {
-                $messages = array(
-                    array("message" => "Veuillez renseiger une heure.", "type" => AL_DANGER)
-                );
-                setMessage($messages);
-                setDisplayMessage(true);
-                $ok = false;
-            }
-
-            if (empty($presentationDate)) {
-                $messages = array(
-                    array("message" => "Veuillez renseiger une date.", "type" => AL_DANGER)
-                );
-                setMessage($messages);
-                setDisplayMessage(true);
-                $ok = false;
-            }*/
-
             if ($ok) {
 
 
@@ -193,6 +182,13 @@ switch ($role) {
                         setMessage($messages);
                         setDisplayMessage(true);
                     }
+                }
+                else {
+                    $messages = array(
+                        array("message" => "Impossible de mettre à jour avec les mêmes données", "type" => AL_WARNING)
+                    );
+                    setMessage($messages);
+                    setDisplayMessage(true);
                 }
             }
         }
@@ -284,7 +280,7 @@ switch ($role) {
 
                 if ($sessionStart > $sessionEnd) {
                     $messages = array(
-                        array("message" => "La date de début de session ne peut pas commencé après la fin celle-ci.", "type" => AL_DANGER)
+                        array("message" => "La date de début de session ne peut pas commencer après la fin celle-ci.", "type" => AL_DANGER)
                     );
                     setMessage($messages);
                     setDisplayMessage(true);
@@ -294,7 +290,7 @@ switch ($role) {
                 if ($presentationDate < $sessionEnd) {
                     if ($presentationDate != null) {
                         $messages = array(
-                            array("message" => "La date de présentation ne peut pas êre avant la fin de la session.", "type" => AL_DANGER)
+                            array("message" => "La date de présentation ne peut pas être avant la fin de la session.", "type" => AL_DANGER)
                         );
                         setMessage($messages);
                         setDisplayMessage(true);
@@ -344,6 +340,13 @@ switch ($role) {
                             setMessage($messages);
                             setDisplayMessage(true);
                         }
+                    }
+                    else {
+                        $messages = array(
+                            array("message" => "Impossible de mettre à jour avec les mêmes données", "type" => AL_DANGER)
+                        );
+                        setMessage($messages);
+                        setDisplayMessage(true);
                     }
                 }
             } else {
@@ -414,7 +417,7 @@ switch ($role) {
 
     <script src="js/uikit.js"></script>
     <script src="js/uikit-icons.js"></script>
-    <?php if ($role == RL_MANAGER) { ?>
+    <?php if ($role == RL_MANAGER || $role == RL_EXPERT) { ?>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
         <!-- Import Trumbowyg -->

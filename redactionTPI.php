@@ -1,7 +1,8 @@
 <?php
 require_once("php/inc.all.php");
 
-if (!islogged() || getRoleUserSession() == RL_CANDIDATE) {
+$arrRole = getRoleUserSession();
+if (!islogged() || $arrRole[0]  == RL_CANDIDATE) {
 
     $messages = array(
         array("message" => "Vous n'avez pas les droits pour voir ceci.", "type" => AL_DANGER)
@@ -19,7 +20,7 @@ if (!islogged() || getRoleUserSession() == RL_CANDIDATE) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>Redaction TPI</title>
     <!-- CSS FILES -->
     <link rel="stylesheet" type="text/css" href="css/uikit.css">
     <link rel="stylesheet" href="css/cssNavBar.css">

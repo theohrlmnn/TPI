@@ -1118,16 +1118,16 @@ function buttonChangeRoleListTpi($arrRole, $role)
         foreach ($arrRole as $r) {
             if ($r == RL_ADMINISTRATOR) {
                 if ($role == $r) {
-                    $html .= "<label><input class=\"uk-radio\" type=\"radio\" value=" . RL_ADMINISTRATOR . " name=\"radioRole\" onchange=\"changeRole(" . RL_ADMINISTRATOR . ")\" checked> Liste TPI en tant que Administrateur</label>";
+                    $html .= "<label><input class=\"uk-radio\" type=\"radio\" value=" . RL_ADMINISTRATOR . " name=\"radioRole\" onchange=\"changeRole(" . RL_ADMINISTRATOR . ")\" checked> Liste TPI en tant qu'Administrateur</label>";
                 } else {
-                    $html .= "<label><input class=\"uk-radio\" type=\"radio\" value=" . RL_ADMINISTRATOR . " name=\"radioRole\" onchange=\"changeRole(" . RL_ADMINISTRATOR . ")\"> Liste TPI en tant que Administrateur</label>";
+                    $html .= "<label><input class=\"uk-radio\" type=\"radio\" value=" . RL_ADMINISTRATOR . " name=\"radioRole\" onchange=\"changeRole(" . RL_ADMINISTRATOR . ")\"> Liste TPI en tant qu'Administrateur</label>";
                 }
             }
             if ($r == RL_EXPERT) {
                 if ($role == $r) {
-                    $html .= "<label><input class=\"uk-radio\" type=\"radio\" value=" . RL_EXPERT . " name=\"radioRole\" onchange=\"changeRole(" . RL_EXPERT . ")\" checked > Liste TPI en tant que Expert</label>";
+                    $html .= "<label><input class=\"uk-radio\" type=\"radio\" value=" . RL_EXPERT . " name=\"radioRole\" onchange=\"changeRole(" . RL_EXPERT . ")\" checked > Liste TPI en tant qu'Expert</label>";
                 } else {
-                    $html .= "<label><input class=\"uk-radio\" type=\"radio\" value=" . RL_EXPERT . " name=\"radioRole\" onchange=\"changeRole(" . RL_EXPERT . ")\" > Liste TPI en tant que Expert</label>";
+                    $html .= "<label><input class=\"uk-radio\" type=\"radio\" value=" . RL_EXPERT . " name=\"radioRole\" onchange=\"changeRole(" . RL_EXPERT . ")\" > Liste TPI en tant qu'Expert</label>";
                 }
             }
             if ($r == RL_MANAGER) {

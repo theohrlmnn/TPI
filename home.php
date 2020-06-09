@@ -1,7 +1,7 @@
 <?php
 require_once("php/inc.all.php");
-
-if (!islogged() || getRoleUserSession() == RL_CANDIDATE) {
+$arrRole = getRoleUserSession();
+if (!islogged() || $arrRole[0]  == RL_CANDIDATE) {
 
     $messages = array(
         array("message" => "Vous n'avez pas les droits pour voir ceci.", "type" => AL_DANGER)

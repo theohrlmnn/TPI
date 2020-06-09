@@ -43,7 +43,7 @@ if (!$tpi) {
     exit;
 }
 $idUser = getIdUserSession();
-if ( $idUser != $tpi->userManagerId || $idUser != $tpi->userExpertId && $idUser != $tpi->userExpertId2) {
+if ( $idUser != $tpi->userManagerId && $idUser != $tpi->userExpertId && $idUser != $tpi->userExpertId2) {
     $messages = array(
         array("message" => "Vous n'avez pas les droits pour voir ceci.", "type" => AL_DANGER)
     );

@@ -83,26 +83,48 @@ if ($btnCreate) {
         $sessionEnd = formatDateAndTime($dateEndSession, $sessionStartTime);
         $presentationDate = formatDateAndTime($datePresentation, $presentationTime);
 
-        $tpi = new cTpi();
-        $tpi->year = $year;
-        $tpi->userCandidateId = $candidat;
-        $tpi->userManagerId = $manager;
-        $tpi->userExpertId = $expert1;
-        $tpi->userExpertId2 = $expert2;
-        $tpi->title = $title;
-        $tpi->cfcDomain = $domaineCFC;
-        $tpi->abstract = $abstract;
-        $tpi->sessionStart = $sessionStart;
-        $tpi->sessionEnd = $sessionEnd;
-        $tpi->presentationDate = $presentationDate;
-        $tpi->workplace = $workplace;
+        if ($presentationDate < $sessionEnd) {
+            if ($presentationDate != null) {
+                $messages = array(
+                    array("message" => "La date de présentation ne peut pas être avant la fin de la session.", "type" => AL_DANGER)
+                );
+                setMessage($messages);
+                setDisplayMessage(true);
+                $ok = false;
+            }
+        }
 
-        if (createTpi($tpi)) {
+        if ($sessionStart > $sessionEnd) {
             $messages = array(
-                array("message" => "Le TPI a bien été créé", "type" => AL_SUCESS)
+                array("message" => "La date de début de session ne peut pas commencer après la fin celle-ci.", "type" => AL_DANGER)
             );
             setMessage($messages);
             setDisplayMessage(true);
+            $ok = false;
+        }
+
+        if ($ok) {
+            $tpi = new cTpi();
+            $tpi->year = $year;
+            $tpi->userCandidateId = $candidat;
+            $tpi->userManagerId = $manager;
+            $tpi->userExpertId = $expert1;
+            $tpi->userExpertId2 = $expert2;
+            $tpi->title = $title;
+            $tpi->cfcDomain = $domaineCFC;
+            $tpi->abstract = $abstract;
+            $tpi->sessionStart = $sessionStart;
+            $tpi->sessionEnd = $sessionEnd;
+            $tpi->presentationDate = $presentationDate;
+            $tpi->workplace = $workplace;
+
+            if (createTpi($tpi)) {
+                $messages = array(
+                    array("message" => "Le TPI a bien été créé", "type" => AL_SUCESS)
+                );
+                setMessage($messages);
+                setDisplayMessage(true);
+            }
         }
     }
 }
